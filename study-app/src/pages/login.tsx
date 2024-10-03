@@ -40,7 +40,6 @@ export default function Login (){
                     style={style.logo}
                     resizeMode="contain"
                 />
-                <Text style={style.text}>Bem vindo de volta!</Text>
             </View>
             <View style={style.boxMid}>
                 <Input 
@@ -109,8 +108,8 @@ export const style = StyleSheet.create({
         paddingHorizontal:30
     },
     logo:{
-        width:80,
-        height:80,
+        width:180,
+        height:180,
         marginTop:40
     },
     text:{

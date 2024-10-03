@@ -2,10 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const Hoje = () => {
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Tela Hoje</Text>
-    </View>
+            <Text style={styles.text}>Texto</Text>
+        </View>
   );
 };
 

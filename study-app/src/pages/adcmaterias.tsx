@@ -19,7 +19,7 @@ const Adcmat = () => {
                 setLoading(false);
                 return Alert.alert('Materias não informadas!!')
             }
-            navigation.reset({routes:[{name :'AppRouter'}]});
+            navigation.navigate('AppRouter');
         } catch (error) {
             console.log(error)
         }
@@ -45,12 +45,11 @@ const Adcmat = () => {
 export default Adcmat;
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-  },
+  container:{
+    flex:1,
+    alignItems:'center',
+    justifyContent:'center'
+},
   text: {
     fontSize: 24,
     fontWeight: 'bold',

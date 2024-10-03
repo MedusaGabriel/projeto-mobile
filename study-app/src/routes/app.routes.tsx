@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AuthProviderList } from '../context/authContext_list';
 import React from 'react';
 import { Image } from 'react-native';
 import Hoje from '../pages/hoje';
@@ -11,7 +10,6 @@ const Tab = createBottomTabNavigator();
 
 export default function AppRouter() {
   return (
-    <AuthProviderList>
       <Tab.Navigator
         initialRouteName="Hoje"
         screenOptions={({ route }) => ({
@@ -50,6 +48,5 @@ export default function AppRouter() {
           />
         <Tab.Screen name="Mais" component={Mais} />
       </Tab.Navigator>
-      </AuthProviderList>
   );
 }
