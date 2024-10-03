@@ -1,4 +1,3 @@
-// src/pages/Materias.tsx
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, Button, FlatList, TextInput } from 'react-native';
 
