@@ -5,6 +5,7 @@ import { Input } from "../components/Input";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Adcmat = () => {
     const [materia, setMateria] = useState('');
@@ -42,6 +43,11 @@ const Adcmat = () => {
             console.log(error);
         }
     }
+
+    // Função para cancelar e voltar para a tela anterior
+    const handleCancel = () => {
+        navigation.goBack();
+    };
 
     return (
         <View style={styles.container}>
@@ -92,6 +98,7 @@ const Adcmat = () => {
 
             <View style={styles.boxBottom}>
                 <Button text="Próximo" loading={loading} onPress={() => getMateria()} />
+                <Button text="Cancelar" onPress={handleCancel} />
             </View>
         </View>
     );

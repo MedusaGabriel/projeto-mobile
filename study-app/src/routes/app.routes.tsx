@@ -31,21 +31,14 @@ export default function AppRouter() {
           tabBarActiveTintColor: 'blue',
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
-            backgroundColor: '#353535',
+            backgroundColor: '#FFF',
           },
           headerTintColor: '#FFF',
         })}
       >
         <Tab.Screen name="Hoje" component={Hoje} />
         <Tab.Screen name="Metas" component={Metas} />
-        <Tab.Screen name="Materias" component={Materias}
-        options={{
-          headerStyle: {
-            backgroundColor: '#353535', 
-          }, 
-          headerTintColor: '#FFF',
-        }}
-          />
+        <Tab.Screen name="Materias" component={Materias}/>
         <Tab.Screen name="Mais" component={Mais} />
       </Tab.Navigator>
   );
