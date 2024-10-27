@@ -1,4 +1,4 @@
-import React,{ useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { StyleSheet,Dimensions, TouchableOpacity} from "react-native";
 import Logo from '../assets/logo.png';
 import { Input } from "../components/Input";
@@ -6,6 +6,8 @@ import { Button } from "../components/Button";
 import {Text, View,Image, Alert} from 'react-native'
 import { useNavigation,NavigationProp  } from '@react-navigation/native';
 import {MaterialIcons,Octicons} from '@expo/vector-icons';
+import { auth } from "../services/firebaseConfig";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 export default function Login (){
     const navigation = useNavigation<NavigationProp<any>>();
@@ -14,22 +16,33 @@ export default function Login (){
     const [password,setPassword]         = useState('');
     const [showPassword,setShowPassword] = useState(true);
     const [loading,setLoading]           = useState(false);
+    const [signInWithEmailAndPassword, firebaseUser, firebaseloading, error,
+      ] = useSignInWithEmailAndPassword(auth);
 
+    //Função para realizar o login
     async function getLogin() {
-        try {
-            setLoading(true)
-            navigation.reset({routes:[{name :'LoginRoutes'}]});
-            if(!email ||!password){
-                return Alert.alert('Anteção!!','Informe os campos obrigatórios!')
-            }
-
-        } catch (error) {
-            console.log(error)
-        }finally{
-            setLoading(false)
+        setLoading(true);
+        if(!email ||!password){
+            setLoading(false);
+            return Alert.alert('Anteção!!','Informe os campos obrigatórios!')
+        }
+        const userCredential = await signInWithEmailAndPassword(email, password); 
+        if (userCredential) {
+            console.log('Login realizado com sucesso!!');
+            navigation.reset({ routes: [{ name: 'AppRouter' }] });
         }
     }
 
+    //Monitora se há algum erro e retorna no console e no Alerta
+    useEffect(() => {
+        if (error) {
+            console.log('Erro ao tentar realizar login',error);
+            Alert.alert('Erro', 'Falha no login, verifique suas credenciais.');
+            setEmail('');
+            setPassword('');
+            setLoading(false);
+        }
+    }, [error]);
 
     return(
         <View style={style.container}>

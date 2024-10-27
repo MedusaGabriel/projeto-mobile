@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import Logo from '../assets/logo.png';
+import React, { useEffect, useState } from "react";import { StyleSheet, TouchableOpacity } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { Text, View, Image, Alert } from 'react-native';
+import { Text, View, Alert } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
@@ -20,23 +18,37 @@ export default function Cadastro() {
     
     const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error
       ] = useCreateUserWithEmailAndPassword(auth);
+    
+    // Verifica se o usuário foi criado com sucesso ou se houve um erro
+    useEffect(() => {
+        if (firebaseUser) {
+            Alert.alert('Sucesso', 'Conta criada com sucesso!');
+            console.log('Conta criada com sucesso!!');
+            navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
+        }
+    }, [firebaseUser, navigation]);
+
+    // Verifica se houve erro
+    useEffect(() => {
+        if (error) {
+            // Verifica se o erro é de email já em uso
+            if (error.code === 'auth/email-already-in-use') {
+                Alert.alert('Erro', 'Este e-mail já está em uso. Tente outro.');
+            } else {
+                Alert.alert('Erro', 'Houve um problema ao criar sua conta. Tente novamente.');
+            }
+        }
+    }, [error]);
 
     async function handleRegister() {
-        preventDefault();
-        createUserWithEmailAndPassword(email, password);
-        navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
-        
-        try {
-            setLoading(true);
-            if (!email || !password || !username) {
-                return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!');
-            }
-
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+        if (!email || !password || !username) {
+            return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!');
         }
+
+        setLoading(true);
+        // Cria o usuário com o email e senha
+        await createUserWithEmailAndPassword(email, password);
+        setLoading(false);
     }
 
     return (
@@ -79,7 +91,6 @@ export default function Cadastro() {
         </View>
     );
 }
-
 export const style = StyleSheet.create({
     container: {
         flex: 1,
@@ -107,8 +118,4 @@ export const style = StyleSheet.create({
         fontSize: 16,
         color: '#878af6',
     },
-});
-
-function preventDefault() {
-    throw new Error("Function not implemented.");
-}
+})
