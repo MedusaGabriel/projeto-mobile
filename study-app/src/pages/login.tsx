@@ -1,5 +1,5 @@
 import React,{ useState } from "react";
-import { StyleSheet,Dimensions} from "react-native";
+import { StyleSheet,Dimensions, TouchableOpacity} from "react-native";
 import Logo from '../assets/logo.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -15,15 +15,14 @@ export default function Login (){
     const [showPassword,setShowPassword] = useState(true);
     const [loading,setLoading]           = useState(false);
 
-
     async function getLogin() {
         try {
             setLoading(true)
-            
+            navigation.reset({routes:[{name :'LoginRoutes'}]});
             if(!email ||!password){
                 return Alert.alert('Anteção!!','Informe os campos obrigatórios!')
             }
-            navigation.reset({routes:[{name :'LoginRoutes'}]});
+
         } catch (error) {
             console.log(error)
         }finally{
@@ -48,7 +47,6 @@ export default function Login (){
                     onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
-                    onIconRigthPress={()=>console.log('OLA')}
                 />
                 <Input 
                     title="SENHA"
@@ -63,7 +61,12 @@ export default function Login (){
             <View style={style.boxBottom}>
                 <Button  text="ENTRAR" loading={loading} onPress={()=>getLogin()}/>
             </View>
-            <Text style={style.textBottom}>Não tem conta? <Text  style={style.textBottomCreate}>Crie agora</Text></Text>
+            <Text style={style.textBottom}>
+                Não tem conta? 
+                <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+                    <Text style={style.textBottomCreate}> Crie agora</Text>
+                </TouchableOpacity>
+            </Text>
         </View>
     )
 }

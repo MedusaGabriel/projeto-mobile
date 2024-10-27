@@ -4,6 +4,7 @@ import Login from '../pages/login';
 import Curso from '../pages/curso';
 import Adcmaterias from '../pages/adcmaterias';
 import AppRouter from './app.routes';
+import Cadastro from '../pages/cadastro';
 
 export default function Routes (){
     const Stack = createStackNavigator();  
@@ -20,6 +21,10 @@ export default function Routes (){
             <Stack.Screen
                 name="Login" 
                 component={Login}
+            />
+            <Stack.Screen   
+                name="Cadastro"
+                component={Cadastro}
             />
             <Stack.Screen   
                 name="LoginRoutes"
