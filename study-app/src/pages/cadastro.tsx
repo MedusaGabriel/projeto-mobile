@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Logo from '../assets/logo.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -14,27 +14,24 @@ export default function Cadastro() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [user, setUser] = useState('');
+    const [username, setUsername] = useState(''); 
     const [showPassword, setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [createUserWithEmailAndPassword, user, loading, error,
+    
+    const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error
       ] = useCreateUserWithEmailAndPassword(auth);
 
-    async function handleRegister(e) {
-        e.preventDefault();
+    async function handleRegister() {
+        preventDefault();
         createUserWithEmailAndPassword(email, password);
+        navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
+        
         try {
             setLoading(true);
-            if (!email || !password || !confirmPassword || !user) {
+            if (!email || !password || !username) {
                 return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!');
             }
-            if (password !== confirmPassword) {
-                return Alert.alert('Atenção!!', 'As senhas não coincidem!');
-            }
 
-            // Lógica de registro aqui
-
-            navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
         } catch (error) {
             console.log(error);
         } finally {
@@ -47,15 +44,15 @@ export default function Cadastro() {
             <View style={style.boxCenter}>
                 <Input
                     title="NOME DE USUÁRIO"
-                    value={user}
-                    onChangeText={e.setUser(e.target.value)}
+                    value={username}
+                    onChangeText={setUsername}
                     IconRigth={MaterialIcons}
                     iconRightName="person"
                 />
                 <Input
                     title="ENDEREÇO E-MAIL"
                     value={email}
-                    onChangeText={e.setEmail(e.target.value)}
+                    onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
 
@@ -63,7 +60,7 @@ export default function Cadastro() {
                 <Input
                     title="SENHA"
                     value={password}
-                    onChangeText={e.setPassword(e.target.value)}
+                    onChangeText={setPassword}
                     IconRigth={Octicons}
                     iconRightName={showPassword ? "eye-closed" : "eye"}
                     onIconRigthPress={() => setShowPassword(!showPassword)}
@@ -71,7 +68,7 @@ export default function Cadastro() {
                 />
             </View>
             <View style={style.boxBottom}>
-                <Button text="CADASTRAR" loading={loading} onPress={() => handleRegister()} />
+                <Button text="CADASTRAR" loading={loading} onPress={handleRegister} />
                 <Text style={style.textBottom}>
                     Já tem conta? 
                     <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -111,3 +108,7 @@ export const style = StyleSheet.create({
         color: '#878af6',
     },
 });
+
+function preventDefault() {
+    throw new Error("Function not implemented.");
+}
