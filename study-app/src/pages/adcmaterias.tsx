@@ -5,7 +5,6 @@ import { Input } from "../components/Input";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Adcmat = () => {
     const [materia, setMateria] = useState('');

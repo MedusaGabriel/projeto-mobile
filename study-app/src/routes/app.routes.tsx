@@ -34,6 +34,7 @@ export default function AppRouter() {
             paddingTop: 10,
             backgroundColor: '#FFF',
           },
+          headerShown: false,
           headerTintColor: '#FFF',
         })}
       >

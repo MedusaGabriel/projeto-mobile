@@ -26,11 +26,10 @@ const Mais = () => {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.text}>Fazer Logout</Text>
-        {/* Botão com ícone */}
         <TouchableOpacity onPress={handleLogout} style={styles.button}>
           <MaterialCommunityIcons 
             name="exit-to-app" 
-            size={30}  // Diminuindo o tamanho do ícone
+            size={30}
             color="black" 
           />
         </TouchableOpacity>
@@ -39,7 +38,6 @@ const Mais = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
