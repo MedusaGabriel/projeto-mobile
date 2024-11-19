@@ -28,7 +28,7 @@ export default function Login (){
         }
         const userCredential = await signInWithEmailAndPassword(email, password); 
         if (userCredential) {
-            console.log('Login realizado com sucesso!!');
+            console.log('Login realizado com sucesso');
             navigation.reset({ routes: [{ name: 'AppRouter' }] });
         }
     }

@@ -1,25 +1,69 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { signOut } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig'; // Sua configuração do Firebase
+import { useNavigation,NavigationProp  } from '@react-navigation/native'; // Hook de navegação
+import { MaterialCommunityIcons } from '@expo/vector-icons'; // Biblioteca de ícones
 
 const Mais = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
+
+  // Função de logout
+  const handleLogout = async () => {
+    try {
+      // Fazendo logout do Firebase
+      await signOut(auth);
+      console.log('Logout realizado com sucesso');
+
+      // Redirecionando para a tela de login
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Tela Mais</Text>
+      <View style={styles.content}>
+        <Text style={styles.text}>Fazer Logout</Text>
+        {/* Botão com ícone */}
+        <TouchableOpacity onPress={handleLogout} style={styles.button}>
+          <MaterialCommunityIcons 
+            name="exit-to-app" 
+            size={30}  // Diminuindo o tamanho do ícone
+            color="black" 
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
+    justifyContent: 'flex-start',  // Alinha o conteúdo no final (parte inferior)
+    alignItems: 'flex-end',  // Alinha o conteúdo à direita
+    padding: 20,  // Adiciona um pouco de espaço nas bordas
+  },
+  content: {
+    flexDirection: 'row',  // Organiza o texto e o ícone lado a lado
+    alignItems: 'center',  // Alinha o texto e o ícone verticalmente
   },
   text: {
-    fontSize: 24,
+    marginRight: 1,// Adiciona espaço entre o texto e o ícone
+    fontSize: 16,
     fontWeight: 'bold',
   },
+  button: {
+    padding: 5,  // Reduzindo o padding para diminuir o tamanho do botão
+    backgroundColor: '#f0f0f0',  // Exemplo de cor de fundo, pode ser ajustada
+    borderRadius: 25,  // Torna o botão arredondado
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
 
 export default Mais;
