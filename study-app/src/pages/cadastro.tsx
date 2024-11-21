@@ -25,18 +25,19 @@ export default function Cadastro() {
         if (firebaseUser) {
             Alert.alert('Sucesso', 'Conta criada com sucesso!');
             console.log('Conta criada com sucesso!!');
-            salvarUsuarioNoFirestore(firebaseUser.user.uid, username, email);
+            salvarUsuarioNoFirestore(firebaseUser.user.uid, username, email, password);
             navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
         }
     }, [firebaseUser, navigation]);
 
     // Função para salvar usuário no Firestore
-    const salvarUsuarioNoFirestore = async (uid, username, email) => {
+    const salvarUsuarioNoFirestore = async (uid: string, username: string, email: string, password: string) => {
         try {
             await setDoc(doc(firestore, 'users', uid), {
                 username: username,
                 email: email,
-                createdAt: new Date().toISOString() // Adiciona a data de criação
+                senha: password,
+                criação: new Date().toISOString() // Adiciona a data de criação
             });
             console.log("Usuário salvo com sucesso no Firestore!");
         } catch (error) {
