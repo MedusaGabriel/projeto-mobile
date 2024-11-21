@@ -5,7 +5,8 @@ import { Text, View, Alert } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "../services/firebaseConfig";
+import { auth, firestore } from "../services/firebaseConfig";
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Cadastro() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -24,9 +25,25 @@ export default function Cadastro() {
         if (firebaseUser) {
             Alert.alert('Sucesso', 'Conta criada com sucesso!');
             console.log('Conta criada com sucesso!!');
+            salvarUsuarioNoFirestore(firebaseUser.user.uid, username, email);
             navigation.reset({ routes: [{ name: 'LoginRoutes' }] });
         }
     }, [firebaseUser, navigation]);
+
+    // Função para salvar usuário no Firestore
+    const salvarUsuarioNoFirestore = async (uid, username, email) => {
+        try {
+            await setDoc(doc(firestore, 'users', uid), {
+                username: username,
+                email: email,
+                createdAt: new Date().toISOString() // Adiciona a data de criação
+            });
+            console.log("Usuário salvo com sucesso no Firestore!");
+        } catch (error) {
+            console.error("Erro ao salvar o usuário no Firestore: ", error);
+            Alert.alert("Erro", "Ocorreu um erro ao salvar as informações do usuário.");
+        }
+    };
 
     // Verifica se houve erro
     useEffect(() => {
