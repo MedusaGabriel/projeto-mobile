@@ -46,8 +46,6 @@ const Home = () => {
         // Se o usuário estiver logado, busca o username no Firestore
         fetchUserName(user.uid);
       } else {
-        // Caso contrário, faz algo (como redirecionar para o login)
-        Alert.alert('Erro', 'Usuário não autenticado');
         setLoading(false);
       }
     });
@@ -56,7 +54,7 @@ const Home = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[{ paddingTop: 50 }, styles.container]}>
       {loading ? (
         <Text style={styles.text}>Carregando...</Text>
       ) : (
