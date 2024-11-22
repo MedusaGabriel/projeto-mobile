@@ -1,32 +1,32 @@
-import React,{ useEffect, useState } from "react";
-import { StyleSheet,Dimensions, TouchableOpacity} from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
 import Logo from '../assets/logo.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import {Text, View,Image, Alert} from 'react-native'
-import { useNavigation,NavigationProp  } from '@react-navigation/native';
-import {MaterialIcons,Octicons} from '@expo/vector-icons';
+import { Text, View, Image } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { auth } from "../services/firebaseConfig";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
-export default function Login (){
+export default function Login() {
     const navigation = useNavigation<NavigationProp<any>>();
 
-    const [email,setEmail]               = useState('');
-    const [password,setPassword]         = useState('');
-    const [showPassword,setShowPassword] = useState(true);
-    const [loading,setLoading]           = useState(false);
-    const [signInWithEmailAndPassword, firebaseUser, firebaseloading, error,
-      ] = useSignInWithEmailAndPassword(auth);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [signInWithEmailAndPassword, firebaseUser, firebaseloading, error] =
+        useSignInWithEmailAndPassword(auth);
 
     //Função para realizar o login
     async function getLogin() {
         setLoading(true);
-        if(!email ||!password){
+        if (!email || !password) {
             setLoading(false);
-            return Alert.alert('Anteção!!','Informe os campos obrigatórios!')
+            return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!')
         }
-        const userCredential = await signInWithEmailAndPassword(email, password); 
+        const userCredential = await signInWithEmailAndPassword(email, password);
         if (userCredential) {
             console.log('Login realizado com sucesso');
             navigation.reset({ routes: [{ name: 'AppRouter' }] });
@@ -36,7 +36,7 @@ export default function Login (){
     //Monitora se há algum erro e retorna no console e no Alerta
     useEffect(() => {
         if (error) {
-            console.log('Erro ao tentar realizar login',error);
+            console.log('Erro ao tentar realizar login', error);
             Alert.alert('Erro', 'Falha no login, verifique suas credenciais.');
             setEmail('');
             setPassword('');
@@ -44,120 +44,97 @@ export default function Login (){
         }
     }, [error]);
 
-    return(
-        <View style={style.container}>
-            <View style={style.boxTop}>
-                <Image 
-                    source={Logo} 
-                    style={style.logo}
+    return (
+        <View style={styles.container}>
+            <View style={styles.boxTop}>
+                <Image
+                    source={Logo}
+                    style={styles.logo}
                     resizeMode="contain"
                 />
             </View>
-            <View style={style.boxMid}>
-                <Input 
+            <View style={styles.boxMid}>
+                <Input
                     title="ENDEREÇO E-MAIL"
                     value={email}
                     onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
+                    style={styles.input} // Estilo para o campo de email
                 />
-                <Input 
+                <Input
                     title="SENHA"
                     value={password}
                     onChangeText={setPassword}
                     IconRigth={Octicons}
-                    iconRightName={showPassword?"eye-closed":"eye"}
-                    onIconRigthPress={()=>setShowPassword(!showPassword)}
+                    iconRightName={showPassword ? "eye-closed" : "eye"}
+                    onIconRigthPress={() => setShowPassword(!showPassword)}
                     secureTextEntry={showPassword}
+                    style={styles.input} // Estilo para o campo de senha
                 />
             </View>
-            <View style={style.boxBottom}>
-                <Button  text="ENTRAR" loading={loading} onPress={()=>getLogin()}/>
+            <View style={styles.boxBottom}>
+                <Button text="ENTRAR" loading={loading} onPress={() => getLogin()} />
             </View>
-            <Text style={style.textBottom}>
-                Não tem conta? 
+            <Text style={styles.textBottom}>
+                Não tem conta?
                 <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-                    <Text style={style.textBottomCreate}> Crie agora</Text>
+                    <Text style={styles.textBottomCreate}> Crie agora</Text>
                 </TouchableOpacity>
             </Text>
         </View>
-    )
+    );
 }
 
-export const style = StyleSheet.create({
-    container:{
-        flex:1,
-        alignItems:'center',
-        justifyContent:'center'
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#2D2D2D', // Fundo cinza escuro (preto mais claro)
     },
-    boxTop:{
-        height:Dimensions.get('window').height/3,
-        width:'100%',
-        // backgroundColor:'red',
-        alignItems:'center',
-        justifyContent:'center'
+    boxTop: {
+        height: Dimensions.get('window').height / 3,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    boxMid:{
-        height:Dimensions.get('window').height/4,
-        // backgroundColor:'blue',
-        width:'100%',
-        paddingHorizontal:37,
+    boxMid: {
+        height: Dimensions.get('window').height / 4,
+        width: '100%',
+        paddingHorizontal: 37,
     },
-    boxBottom:{
-        height:Dimensions.get('window').height/3,
-        // backgroundColor:'green',
-        width:'100%',
-        alignItems:'center',
-        justifyContent:'flex-start'
-        
+    boxBottom: {
+        height: Dimensions.get('window').height / 3,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
-    boxInput:{
-        width:'100%',
-        height:40,
-        borderWidth:1,
-        borderRadius:40,
-        borderColor:'#d7d8d7',
-        backgroundColor:'#f1f7fa',
-        marginTop:10,
-        flexDirection:'row',
-        alignItems:'center',
-        paddingHorizontal:30
+    logo: {
+        width: 180,
+        height: 180,
+        marginTop: 40,
     },
-    logo:{
-        width:180,
-        height:180,
-        marginTop:40
+    input: {
+        backgroundColor: '#fff', // Cor de fundo dos campos
+        borderRadius: 10,
+        marginBottom: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        shadowColor: '#000', // Sombras para dar profundidade
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5, // Elevação para Android
     },
-    text:{
-        marginTop:35,
-        fontSize:18,
-        fontWeight:'bold'
-    },
-    input:{
-        // backgroundColor:'red',
-        height:'100%',
-        width:'100%',
-        borderRadius:40,
-        // paddingHorizontal:20
-    },
-    boxIcon:{
-        width:50,
-        height:50,
-        backgroundColor:'red'
-    },
-    titleInput:{
-        marginLeft:5,
-        color:'gray',
-        marginTop:20
-    },
-    textBottom:{
+    textBottom: {
         position: "absolute",
         bottom: 50,
-        fontSize:16,
-        color:'gray'
+        fontSize: 16,
+        color: 'gray',
     },
-    textBottomCreate:{
-        fontSize:16,
-        color:'#878af6'
-    }
-})
+    textBottomCreate: {
+        fontSize: 16,
+        color: '#878af6', // Cor para o link "Crie agora"
+    },
+});

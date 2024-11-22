@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";import { StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { Text, View, Alert } from 'react-native';
+import { Text, View } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
@@ -17,8 +18,8 @@ export default function Cadastro() {
     const [showPassword, setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
     
-    const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error
-      ] = useCreateUserWithEmailAndPassword(auth);
+    const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error] =
+        useCreateUserWithEmailAndPassword(auth);
     
     // Verifica se o usuário foi criado com sucesso ou se houve um erro
     useEffect(() => {
@@ -70,14 +71,19 @@ export default function Cadastro() {
     }
 
     return (
-        <View style={style.container}>
-            <View style={style.boxCenter}>
+        <View style={styles.container}>
+            <View style={styles.boxTop}>
+                <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+                <Text style={styles.title}>Crie sua conta</Text>
+            </View>
+            <View style={styles.boxCenter}>
                 <Input
                     title="NOME DE USUÁRIO"
                     value={username}
                     onChangeText={setUsername}
                     IconRigth={MaterialIcons}
                     iconRightName="person"
+                    style={styles.input}
                 />
                 <Input
                     title="ENDEREÇO E-MAIL"
@@ -85,7 +91,7 @@ export default function Cadastro() {
                     onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
-
+                    style={styles.input}
                 />
                 <Input
                     title="SENHA"
@@ -95,37 +101,69 @@ export default function Cadastro() {
                     iconRightName={showPassword ? "eye-closed" : "eye"}
                     onIconRigthPress={() => setShowPassword(!showPassword)}
                     secureTextEntry={showPassword}
+                    style={styles.input}
                 />
             </View>
-            <View style={style.boxBottom}>
+            <View style={styles.boxBottom}>
                 <Button text="CADASTRAR" loading={loading} onPress={handleRegister} />
-                <Text style={style.textBottom}>
+                <Text style={styles.textBottom}>
                     Já tem conta? 
                     <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={style.textBottomCreate}> Faça Login</Text>
+                        <Text style={styles.textBottomCreate}> Faça Login</Text>
                     </TouchableOpacity>
                 </Text>
             </View>
         </View>
     );
 }
-export const style = StyleSheet.create({
+
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#2D2D2D', // Cor de fundo mais clara (cinza)
         paddingHorizontal: 20,
+    },
+    boxTop: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 30,  // Aumentei o espaçamento superior
+    },
+    title: {
+        fontSize: 24,
+        color: '#fff',
+        fontWeight: 'bold',
     },
     boxCenter: {
         flex: 0.5,
         width: '100%',
         justifyContent: 'center',
+        marginBottom: 30,  // Ajuste de espaçamento entre campos e o botão
     },
     boxBottom: {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'flex-end',
         paddingBottom: 20,
+    },
+    input: {
+        backgroundColor: '#fff', // Cor de fundo dos campos
+        borderRadius: 10,
+        marginBottom: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        shadowColor: '#000', // Sombras para dar profundidade
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5, // Elevação para Android
+    },
+    logo: {
+        width: 120, // Ajuste do tamanho da logo
+        height: 120, // Ajuste do tamanho da logo
+        marginBottom: 20, // Ajuste do espaçamento inferior da logo
     },
     textBottom: {
         fontSize: 16,
@@ -136,4 +174,4 @@ export const style = StyleSheet.create({
         fontSize: 16,
         color: '#878af6',
     },
-})
+});

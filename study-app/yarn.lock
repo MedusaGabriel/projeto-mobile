@@ -1159,16 +1159,16 @@
   dependencies:
     uuid "^8.0.0"
 
-"@expo/cli@0.21.5":
-  version "0.21.5"
-  resolved "https://registry.npmjs.org/@expo/cli/-/cli-0.21.5.tgz"
-  integrity sha512-hd0pC5ntZxon7IijOsqp5wPOMGtaQNvTPOc74EQc+WS+Cldd7cMNSKKVUI2X7Lrn2Zcje9ne/WgGCnMTjdcVgA==
+"@expo/cli@0.21.7":
+  version "0.21.7"
+  resolved "https://registry.npmjs.org/@expo/cli/-/cli-0.21.7.tgz"
+  integrity sha512-qF9E2eOiafvlcDhMb2nrQCv+Opa9yUDVmzvLMwUSE0zsbUf6GuhBlbrbzy0dYLnwI8CvwDfJkLPAOgJhuxJCLw==
   dependencies:
     "@0no-co/graphql.web" "^1.0.8"
     "@babel/runtime" "^7.20.0"
     "@expo/code-signing-certificates" "^0.0.5"
     "@expo/config" "~10.0.4"
-    "@expo/config-plugins" "~9.0.3"
+    "@expo/config-plugins" "~9.0.10"
     "@expo/devcert" "^1.1.2"
     "@expo/env" "~0.4.0"
     "@expo/image-utils" "^0.6.0"
@@ -1177,7 +1177,7 @@
     "@expo/osascript" "^2.0.31"
     "@expo/package-manager" "^1.5.0"
     "@expo/plist" "^0.2.0"
-    "@expo/prebuild-config" "^8.0.16"
+    "@expo/prebuild-config" "^8.0.17"
     "@expo/rudder-sdk-node" "^1.1.1"
     "@expo/spawn-async" "^1.7.2"
     "@expo/xcpretty" "^4.3.0"
@@ -1244,10 +1244,10 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@~9.0.0", "@expo/config-plugins@~9.0.3", "@expo/config-plugins@9.0.9":
-  version "9.0.9"
-  resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-9.0.9.tgz"
-  integrity sha512-pbgbY3SwCMwkijhfe163J05BrTx4MqzeaV+nVgUMs7vRcjHY1tfM57Pdv6SPtgeDvZ8fvdXFXXzkJva+a7C9Bw==
+"@expo/config-plugins@~9.0.10":
+  version "9.0.10"
+  resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-9.0.10.tgz"
+  integrity sha512-4piPSylJ8z3to+YZpl/6M2mLxASOdIFANA8FYihsTf9kWlyimV9L/+MGgPXJcieaHXYZZqOryf8hQFVeg/68+A==
   dependencies:
     "@expo/config-types" "^52.0.0"
     "@expo/json-file" "~9.0.0"
@@ -1269,13 +1269,13 @@
   resolved "https://registry.npmjs.org/@expo/config-types/-/config-types-52.0.1.tgz"
   integrity sha512-vD8ZetyKV7U29lR6+NJohYeoLYTH+eNYXJeNiSOrWCz0witJYY11meMmEnpEaVbN89EfC6uauSUOa6wihtbyPQ==
 
-"@expo/config@~10.0.4":
-  version "10.0.4"
-  resolved "https://registry.npmjs.org/@expo/config/-/config-10.0.4.tgz"
-  integrity sha512-pkvdPqKTaP6+Qvc8aTmDLQ9Dfwp98P1GO37MFKwsF5XormfN/9/eN8HfIRoM6d3uSIVKCcWW3X2yAEbNmOyfXw==
+"@expo/config@~10.0.4", "@expo/config@~10.0.5":
+  version "10.0.5"
+  resolved "https://registry.npmjs.org/@expo/config/-/config-10.0.5.tgz"
+  integrity sha512-wq48h3HlAPq5v/gMprarAiVY1aEXNBVJ+Em0vrHcYFO8UyxzR6oIao2E4Ed3VWHqhTzPXkMPH4hKCKlzFVBFwQ==
   dependencies:
     "@babel/code-frame" "~7.10.4"
-    "@expo/config-plugins" "~9.0.0"
+    "@expo/config-plugins" "~9.0.10"
     "@expo/config-types" "^52.0.0"
     "@expo/json-file" "^9.0.0"
     deepmerge "^4.3.1"
@@ -1417,13 +1417,13 @@
     base64-js "^1.2.3"
     xmlbuilder "^14.0.0"
 
-"@expo/prebuild-config@^8.0.16":
-  version "8.0.17"
-  resolved "https://registry.npmjs.org/@expo/prebuild-config/-/prebuild-config-8.0.17.tgz"
-  integrity sha512-HM+XpDox3fAZuXZXvy55VRcBbsZSDijGf8jI8i/pexgWvtsnt1ouelPXRuE1pXDicMX+lZO83QV+XkyLmBEXYQ==
+"@expo/prebuild-config@^8.0.17":
+  version "8.0.19"
+  resolved "https://registry.npmjs.org/@expo/prebuild-config/-/prebuild-config-8.0.19.tgz"
+  integrity sha512-f79EOMHO6J3pFc/KsZXaYdN7cMHD42ZLQXvu5iFDpZi3HEZevpsVWjEdbeK0QCa9WXd8kAxQqO1QKPlAotw4nQ==
   dependencies:
     "@expo/config" "~10.0.4"
-    "@expo/config-plugins" "~9.0.0"
+    "@expo/config-plugins" "~9.0.10"
     "@expo/config-types" "^52.0.0"
     "@expo/image-utils" "^0.6.0"
     "@expo/json-file" "^9.0.0"
@@ -2112,10 +2112,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@react-native-async-storage/async-storage@^1.18.1", "@react-native-async-storage/async-storage@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@react-native-async-storage/async-storage/-/async-storage-2.1.0.tgz"
-  integrity sha512-eAGQGPTAuFNEoIQSB5j2Jh1zm5NPyBRTfjRMfCN0W1OakC5WIB5vsDyIQhUweKN9XOE2/V07lqTMGsL0dGXNkA==
+"@react-native-async-storage/async-storage@^1.18.1", "@react-native-async-storage/async-storage@^1.23.1":
+  version "1.23.1"
+  resolved "https://registry.npmjs.org/@react-native-async-storage/async-storage/-/async-storage-1.23.1.tgz"
+  integrity sha512-Qd2kQ3yi6Y3+AcUlrHxSLlnBvpdCEMVGFlVBneVOjaFaPU61g1huc38g339ysXspwY1QZA2aNhrk/KlHGO+ewA==
   dependencies:
     merge-options "^3.0.4"
 
@@ -3245,9 +3245,9 @@ cross-fetch@^3.1.5:
     node-fetch "^2.6.12"
 
 cross-spawn@^6.0.0:
-  version "6.0.5"
-  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz"
-  integrity sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==
+  version "6.0.6"
+  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.6.tgz"
+  integrity sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==
   dependencies:
     nice-try "^1.0.4"
     path-key "^2.0.1"
@@ -3569,10 +3569,10 @@ expo-constants@~17.0.0, expo-constants@~17.0.3:
     "@expo/config" "~10.0.4"
     "@expo/env" "~0.4.0"
 
-expo-file-system@~18.0.3:
-  version "18.0.3"
-  resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.0.3.tgz"
-  integrity sha512-HKe0dGW3FWYFi1F3THVnTRueTG7j0onmEpUJKRB4UbjeHD2723cn/EutcG216wvrJeebe8w3+00F8Z4xk+9Jrw==
+expo-file-system@~18.0.4:
+  version "18.0.4"
+  resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.0.4.tgz"
+  integrity sha512-aAWEDwnu0XHOBYvQ9Q0+QIa+483vYJaC4IDsXyWQ73Rtsg273NZh5kYowY+cAocvoSmA99G6htrLBn11ax2bTQ==
   dependencies:
     web-streams-polyfill "^3.3.2"
 
@@ -3602,10 +3602,10 @@ expo-modules-autolinking@2.0.2:
     require-from-string "^2.0.2"
     resolve-from "^5.0.0"
 
-expo-modules-core@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/expo-modules-core/-/expo-modules-core-2.0.3.tgz"
-  integrity sha512-S/Ozg6NhLkMc7k+qSLzOtjCexuimkYXHM/PCZtbn53nkuNYyaLpfVfrsJsRWxLIMe8ftbm6cDrKlN5mJ6lNODg==
+expo-modules-core@2.0.5:
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/expo-modules-core/-/expo-modules-core-2.0.5.tgz"
+  integrity sha512-FSDsszVyNeyOUuEgfoM0Jcmmdpun+d0P0PvwDKadQ+KZaV5ziePWzMwN5bz3fLJ2i1yMP2hApQ5OkksblNDGGA==
   dependencies:
     invariant "^2.2.4"
 
@@ -3614,26 +3614,26 @@ expo-status-bar@~2.0.0:
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-2.0.0.tgz"
   integrity sha512-vxxdpvpNDMTEc5uTiIrbTvySKKUsOACmfl8OZuUdjNle05oGqwtq3v5YObwym/njSByjoyuZX8UpXBZnxvarwQ==
 
-expo@*, expo@^52.0.7, expo@>=50.0.0:
-  version "52.0.7"
-  resolved "https://registry.npmjs.org/expo/-/expo-52.0.7.tgz"
-  integrity sha512-AXN+FmYF8jR+IUJCuETO9iuMZ2DdGpL175kvHveBM/cS4MQsF7oe1MTnCRLyXQ92BDUZlqjWqWTX1sY3ysPoZw==
+expo@*, expo@>=50.0.0, expo@~52.0.10:
+  version "52.0.10"
+  resolved "https://registry.npmjs.org/expo/-/expo-52.0.10.tgz"
+  integrity sha512-u5uN1RCqLu5sGw3uyzpO8ajifkaU73ZgEctnWE4E2AHRi36pt3pJxZheuG7ZNQB6JI6StukUqBXSFmm6F7ixBQ==
   dependencies:
     "@babel/runtime" "^7.20.0"
-    "@expo/cli" "0.21.5"
-    "@expo/config" "~10.0.4"
-    "@expo/config-plugins" "9.0.9"
+    "@expo/cli" "0.21.7"
+    "@expo/config" "~10.0.5"
+    "@expo/config-plugins" "~9.0.10"
     "@expo/fingerprint" "0.11.2"
     "@expo/metro-config" "0.19.4"
     "@expo/vector-icons" "^14.0.0"
     babel-preset-expo "~12.0.1"
     expo-asset "~11.0.1"
     expo-constants "~17.0.3"
-    expo-file-system "~18.0.3"
+    expo-file-system "~18.0.4"
     expo-font "~13.0.1"
     expo-keep-awake "~14.0.1"
     expo-modules-autolinking "2.0.2"
-    expo-modules-core "2.0.3"
+    expo-modules-core "2.0.5"
     fbemitter "^3.0.0"
     web-streams-polyfill "^3.3.2"
     whatwg-url-without-unicode "8.0.0-3"
@@ -5629,10 +5629,10 @@ react-is@^18.2.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-react-native-gesture-handler@^2.21.1, "react-native-gesture-handler@> 1.0.0", "react-native-gesture-handler@>= 2.0.0":
-  version "2.21.1"
-  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.21.1.tgz"
-  integrity sha512-KT19IvAP2nto/9WhDlZ6u62utOvi72VhR1PgqB3zDIiBdRDCPrLCYRduxfz6q8VuCIyzWAcuOh8vas7zmO5Y1w==
+"react-native-gesture-handler@> 1.0.0", "react-native-gesture-handler@>= 2.0.0", react-native-gesture-handler@~2.20.2:
+  version "2.20.2"
+  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.20.2.tgz"
+  integrity sha512-HqzFpFczV4qCnwKlvSAvpzEXisL+Z9fsR08YV5LfJDkzuArMhBu2sOoSPUF/K62PCoAb+ObGlTC83TKHfUd0vg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -5669,10 +5669,10 @@ react-native-reanimated@^3.16.1:
     convert-source-map "^2.0.0"
     invariant "^2.2.4"
 
-react-native-safe-area-context@^4.14.0, "react-native-safe-area-context@>= 4.0.0":
-  version "4.14.0"
-  resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.14.0.tgz"
-  integrity sha512-/SyYpCulWQOnnXhRq6wepkhoyQMowHm1ptDyRz20s+YS/R9mbd+mK+jFyFCyXFJn8jp7vFl43VUCgspuOiEbwA==
+react-native-safe-area-context@^4.12.0, "react-native-safe-area-context@>= 4.0.0":
+  version "4.12.0"
+  resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.12.0.tgz"
+  integrity sha512-ukk5PxcF4p3yu6qMZcmeiZgowhb5AsKRnil54YFUUAXVIS7PJcMHGGC+q44fCiBg44/1AJk5njGMez1m9H0BVQ==
 
 "react-native-screens@>= 4.0.0":
   version "4.1.0"
@@ -5690,7 +5690,7 @@ react-native-vector-icons@^10.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.65 <1.0", "react-native@> 0.50.0", react-native@>=0.57, react-native@0.76.2:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@> 0.50.0", react-native@>=0.57, react-native@0.76.2:
   version "0.76.2"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.76.2.tgz"
   integrity sha512-mkEBKGOmJxhfq8IOsvmk0QuTzlBt9vS+uo0gwbqfUmEDqoC359v80zhUf94WimYBrBkpRQWFbEu5iqMDHrYzlQ==
