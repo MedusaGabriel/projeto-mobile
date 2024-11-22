@@ -101,10 +101,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     boxMid: {
-        height: Dimensions.get('window').height / 3,  // Ajusta a altura da caixa central
+        height: Dimensions.get('window').height / 3,  // Aumenta a altura da caixa central
         width: '100%',
         paddingHorizontal: 37,
-        justifyContent: 'center',
     },
     boxBottom: {
         height: Dimensions.get('window').height / 3,
@@ -122,7 +121,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 15,
         paddingHorizontal: 15,
-        paddingVertical: 15,  // Ajusta o padding vertical para aumentar a altura do input
+        paddingVertical: 20,  // Aumenta o padding vertical para aumentar a altura do input
         height: 60,  // Aumenta a altura do input
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -132,7 +131,7 @@ const styles = StyleSheet.create({
     },
     textBottom: {
         position: "absolute",
-        bottom: 20,  // Ajusta a posição do texto para mais próximo do fundo
+        bottom: 50,
         fontSize: 16,
         color: themas.Colors.secondary,
     },
@@ -141,3 +140,4 @@ const styles = StyleSheet.create({
         color: themas.Colors.blueLigth,
     },
 });
+
