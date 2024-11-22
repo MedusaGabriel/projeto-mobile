@@ -8,7 +8,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { auth } from "../services/firebaseConfig";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { themas } from '../global/themes'; // Altere para o caminho correto do arquivo
+import { themas } from '../global/themes'; 
 
 export default function Login() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -54,28 +54,26 @@ export default function Login() {
             </View>
             <View style={styles.boxMid}>
                 <Input
-                    placeholder="Email"
-                    placeholderTextColor={themas.Colors.secondary}
-                    value={email}
-                    onChangeText={setEmail}
-                    IconRigth={MaterialIcons}
-                    iconRightName="email"
-                    style={styles.input}
-                />
+                placeholder="Email"
+                placeholderTextColor={themas.Colors.secondary}
+                value={email}
+                onChangeText={setEmail}
+                style={styles.input}
+            />
                 <Input
-                    placeholder="Senha"
-                    placeholderTextColor={themas.Colors.secondary}
-                    value={password}
-                    onChangeText={setPassword}
-                    IconRigth={Octicons}
-                    iconRightName={showPassword ? "eye-closed" : "eye"}
-                    onIconRigthPress={() => setShowPassword(!showPassword)}
-                    secureTextEntry={showPassword}
-                    style={styles.input}
-                />
+                placeholder="Senha"
+                placeholderTextColor={themas.Colors.secondary}
+                value={password}
+                onChangeText={setPassword}
+                IconRigth={password.length > 0 ? Octicons : undefined}
+                iconRightName={showPassword ? "eye-closed" : "eye"}
+                onIconRigthPress={() => setShowPassword(!showPassword)}
+                secureTextEntry={showPassword}
+                style={[styles.input, { paddingRight: 50 }]}  // Aumenta o paddingRight para acomodar o ícone
+            />
             </View>
             <View style={styles.boxBottom}>
-                <Button text="ENTRAR" loading={loading} onPress={() => getLogin()} />
+                <Button text="Entrar" loading={loading} onPress={() => getLogin()} />
             </View>
             <Text style={styles.textBottom}>
                 Não tem conta?
@@ -101,12 +99,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     boxMid: {
-        height: Dimensions.get('window').height / 3,  // Aumenta a altura da caixa central
+        height: Dimensions.get('window').height / 6,  // Aumenta a altura da caixa central
         width: '100%',
         paddingHorizontal: 37,
     },
     boxBottom: {
-        height: Dimensions.get('window').height / 3,
+        height: Dimensions.get('window').height / 5,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -117,27 +115,30 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     input: {
-        backgroundColor: themas.Colors.primary,
-        borderRadius: 10,
-        marginBottom: 15,
-        paddingHorizontal: 15,
-        paddingVertical: 20,  // Aumenta o padding vertical para aumentar a altura do input
-        height: 60,  // Aumenta a altura do input
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        paddingLeft: 10,  // Aumenta o paddingLeft para mover o texto para a esquerda
+        paddingRight: 50, // Espaço fixo para o ícone de olho
+        paddingVertical: 20,
+        height: 60,
         shadowRadius: 8,
         elevation: 5,
-    },
+        backgroundColor: themas.Colors.primary,
+        fontFamily: themas.Fonts.regular,
+    },    
     textBottom: {
         position: "absolute",
         bottom: 50,
         fontSize: 16,
         color: themas.Colors.secondary,
-    },
+        fontFamily: themas.Fonts.regular,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },   
     textBottomCreate: {
         fontSize: 16,
+        bottom: -5,
         color: themas.Colors.blueLigth,
+        fontFamily: themas.Fonts.regular,
+        marginLeft: 3,
     },
 });
 

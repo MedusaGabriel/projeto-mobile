@@ -86,7 +86,7 @@ const Materias = () => {
   };
 
   return (
-    <View style={[{ paddingTop: 50 }, styles.container]}>
+    <View style={[{ paddingTop: 60 }, styles.container]}>
       <Text style={styles.text}>Plano de Estudo</Text>
 
       {isAdding && (
@@ -164,13 +164,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: themas.Colors.bgScreen,
-    paddingTop: 50, // Certifique-se de que o padding está aqui
   },
   
   text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontSize: 20,
+    color: themas.Colors.primary, 
+    fontFamily: themas.Fonts.bold,
     marginTop: 0, // Ajuste se necessário
   },
   

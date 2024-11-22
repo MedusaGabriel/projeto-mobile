@@ -24,14 +24,14 @@ const Mais = () => {
   };
 
   return (
-    <View style={[{ paddingTop: 50 }, styles.container]}>
+    <View style={[{ paddingTop: 60 }, styles.container]}>
       <View style={styles.content}>
         <Text style={styles.text}>Fazer Logout</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.button}>
           <MaterialCommunityIcons 
             name="exit-to-app" 
             size={30}
-            color="black" 
+            color= {themas.Colors.primary} 
           />
         </TouchableOpacity>
       </View>
@@ -54,12 +54,13 @@ const styles = StyleSheet.create({
   text: {
     marginRight: 1,// Adiciona espaço entre o texto e o ícone
     fontSize: 16,
-    fontWeight: 'bold',
+    color: themas.Colors.primary, 
+    fontFamily: themas.Fonts.bold
   },
   button: {
     padding: 5,  // Reduzindo o padding para diminuir o tamanho do botão
     backgroundColor: themas.Colors.bgScreen,  // Exemplo de cor de fundo, pode ser ajustada
-    borderRadius: 25,  // Torna o botão arredondado
+    borderRadius: 25,  // Torna o botão arredondad
     justifyContent: 'center',
     alignItems: 'center',
   },

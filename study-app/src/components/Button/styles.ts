@@ -17,12 +17,11 @@ export const style = StyleSheet.create({
         },
         shadowOpacity: 0.29,
         shadowRadius: 4.65,
-
         elevation: 7,
     },
     textButton:{
         fontSize:16,
         color:'#FFFF',
-        fontWeight:'bold'
+        fontFamily: themas.Fonts.bold,
     },
 })

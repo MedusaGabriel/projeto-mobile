@@ -1,10 +1,10 @@
-import { Animated, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { themas } from "../../global/themes";
 
 export const style = StyleSheet.create({
     boxInput: {
         width: '100%',
-        height: 40,
+        height: 0,
         borderWidth: 0, // Remover borda
         borderRadius: 10, // Menos arredondado
         backgroundColor: themas.Colors.bgScreen, // Manter a cor bgScreen
@@ -15,17 +15,16 @@ export const style = StyleSheet.create({
     },
     
     input: {
-        color: themas.Colors.primary, // Cor do texto (branca, conforme o tema)
+        color: themas.Colors.primary,
         height: '100%',
         width: '100%',
-        fontFamily: 'Arial',  // Altere para a fonte desejada
         fontSize: 16,  // Tamanho de fonte maior
         borderRadius: 40,
-        
+        fontFamily: themas.Fonts.regular,
     },
     titleInput: {
         marginLeft: 5,
-        color: themas.Colors.gray,
+        color: themas.Colors.blueLigth,
         marginTop: 20,
     },
     Button: {

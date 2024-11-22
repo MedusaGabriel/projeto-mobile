@@ -13,21 +13,23 @@ function Home() {
   const fetchUserName = async (uid: string) => {
     try {
       console.log('Buscando dados para o UID:', uid);
-
+  
       // Referência ao documento do usuário no Firestore
       const userDoc = doc(firestore, 'users', uid); // 'users' é o nome da coleção, 'uid' é o ID do documento
       const docSnap = await getDoc(userDoc); // Obtém o documento do usuário
-
+  
       if (docSnap.exists()) {
         // Se o documento existir, pega o campo 'username'
         const fullName = docSnap.data()?.username; // AQUI estamos buscando o campo 'username'
-
-
+  
         // Dividir o nome completo e pegar apenas o primeiro nome
         const firstName = fullName ? fullName.split(' ')[0] : 'Usuário'; // Se houver um nome, pega a primeira parte
-
-        console.log('Primeiro nome do usuário encontrado:', firstName);
-        setUserName(firstName); // Armazena o primeiro nome
+  
+        // Tornar a primeira letra maiúscula e o restante minúscula
+        const capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  
+        console.log('Primeiro nome do usuário encontrado:', capitalizedFirstName);
+        setUserName(capitalizedFirstName); // Armazena o primeiro nome com a primeira letra maiúscula
       } else {
         console.log('Documento do usuário não encontrado.');
         Alert.alert('Erro', 'Usuário não encontrado no Firestore');
@@ -39,6 +41,7 @@ function Home() {
       setLoading(false);
     }
   };
+  
 
   // Efeito para capturar o UID do usuário logado
   useEffect(() => {
@@ -56,29 +59,33 @@ function Home() {
   }, []);
 
   return (
-    <View style={[{ paddingTop: 50 }, styles.container]}>
+    <View style={[{ paddingTop: 60 }, styles.container]}>
       {loading ? (
-        <Text style={styles.text}>Carregando...</Text>
+        <Text style={styles.text}>Olá, Carregando...</Text>
       ) : (
-        <Text style={styles.text}>Olá, {userName}! Tenha um ótimo dia!</Text>
+        <Text style={styles.text}>Olá, {userName}!</Text>
       )}
-    </View>
+      <Text style={styles.textsecondary}>Tenha um ótimo dia!!</Text>
+  </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
     backgroundColor: themas.Colors.bgScreen,
   },
   text: {
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: themas.Colors.primary, 
+    fontFamily: themas.Fonts.bold
   },
+  textsecondary: {
+    fontSize: 16,
+    color: themas.Colors.lightGray, 
+    fontFamily: themas.Fonts.regular
+  }
 });
 
 export default Home;
