@@ -151,6 +151,8 @@ export const style = StyleSheet.create({
         marginTop:20
     },
     textBottom:{
+        position: "absolute",
+        bottom: 50,
         fontSize:16,
         color:'gray'
     },

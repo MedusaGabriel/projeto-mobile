@@ -72,7 +72,7 @@ const Curso = () => {
           value={curso}
           onValueChange={setCurso}
           placeholder={{
-            label: 'Selecione seu curso...',
+            label: 'Qual o seu nível de ensino?',
             value: null,
           }}
           items={[
