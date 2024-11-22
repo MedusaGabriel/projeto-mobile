@@ -8,6 +8,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { auth } from "../services/firebaseConfig";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { themas } from '../global/themes'; // Altere para o caminho correto do arquivo
 
 export default function Login() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -19,12 +20,11 @@ export default function Login() {
     const [signInWithEmailAndPassword, firebaseUser, firebaseloading, error] =
         useSignInWithEmailAndPassword(auth);
 
-    //Função para realizar o login
     async function getLogin() {
         setLoading(true);
         if (!email || !password) {
             setLoading(false);
-            return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!')
+            return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!');
         }
         const userCredential = await signInWithEmailAndPassword(email, password);
         if (userCredential) {
@@ -33,7 +33,6 @@ export default function Login() {
         }
     }
 
-    //Monitora se há algum erro e retorna no console e no Alerta
     useEffect(() => {
         if (error) {
             console.log('Erro ao tentar realizar login', error);
@@ -55,22 +54,24 @@ export default function Login() {
             </View>
             <View style={styles.boxMid}>
                 <Input
-                    title="ENDEREÇO E-MAIL"
+                    placeholder="Email"
+                    placeholderTextColor={themas.Colors.secondary}
                     value={email}
                     onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
-                    style={styles.input} // Estilo para o campo de email
+                    style={styles.input}
                 />
                 <Input
-                    title="SENHA"
+                    placeholder="Senha"
+                    placeholderTextColor={themas.Colors.secondary}
                     value={password}
                     onChangeText={setPassword}
                     IconRigth={Octicons}
                     iconRightName={showPassword ? "eye-closed" : "eye"}
                     onIconRigthPress={() => setShowPassword(!showPassword)}
                     secureTextEntry={showPassword}
-                    style={styles.input} // Estilo para o campo de senha
+                    style={styles.input}
                 />
             </View>
             <View style={styles.boxBottom}>
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#2D2D2D', // Fundo cinza escuro (preto mais claro)
+        backgroundColor: themas.Colors.bgSecondary,
     },
     boxTop: {
         height: Dimensions.get('window').height / 3,
@@ -100,9 +101,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     boxMid: {
-        height: Dimensions.get('window').height / 4,
+        height: Dimensions.get('window').height / 3,  // Ajusta a altura da caixa central
         width: '100%',
         paddingHorizontal: 37,
+        justifyContent: 'center',
     },
     boxBottom: {
         height: Dimensions.get('window').height / 3,
@@ -116,25 +118,26 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     input: {
-        backgroundColor: '#fff', // Cor de fundo dos campos
+        backgroundColor: themas.Colors.primary,
         borderRadius: 10,
         marginBottom: 15,
         paddingHorizontal: 15,
-        paddingVertical: 10,
-        shadowColor: '#000', // Sombras para dar profundidade
+        paddingVertical: 15,  // Ajusta o padding vertical para aumentar a altura do input
+        height: 60,  // Aumenta a altura do input
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        elevation: 5, // Elevação para Android
+        elevation: 5,
     },
     textBottom: {
         position: "absolute",
-        bottom: 50,
+        bottom: 20,  // Ajusta a posição do texto para mais próximo do fundo
         fontSize: 16,
-        color: 'gray',
+        color: themas.Colors.secondary,
     },
     textBottomCreate: {
         fontSize: 16,
-        color: '#878af6', // Cor para o link "Crie agora"
+        color: themas.Colors.blueLigth,
     },
 });

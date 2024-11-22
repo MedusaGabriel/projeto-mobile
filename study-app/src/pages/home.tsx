@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, Alert } from 'react-native';
 import { firestore, auth } from '../services/firebaseConfig'; // Importe a configuração do Firebase
 import { doc, getDoc } from 'firebase/firestore'; // Importa o método para obter dados do Firestore
 import { onAuthStateChanged } from 'firebase/auth'; // Para obter o usuário autenticado
+import { themas } from '../global/themes';
 
-const Home = () => {
+function Home() {
   const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -19,7 +20,8 @@ const Home = () => {
 
       if (docSnap.exists()) {
         // Se o documento existir, pega o campo 'username'
-        const fullName = docSnap.data()?.username;  // AQUI estamos buscando o campo 'username'
+        const fullName = docSnap.data()?.username; // AQUI estamos buscando o campo 'username'
+
 
         // Dividir o nome completo e pegar apenas o primeiro nome
         const firstName = fullName ? fullName.split(' ')[0] : 'Usuário'; // Se houver um nome, pega a primeira parte
@@ -62,7 +64,7 @@ const Home = () => {
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -70,6 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: themas.Colors.bgScreen,
   },
   text: {
     fontSize: 20,

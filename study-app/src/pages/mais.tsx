@@ -4,6 +4,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig'; // Sua configuração do Firebase
 import { useNavigation,NavigationProp  } from '@react-navigation/native'; // Hook de navegação
 import { MaterialCommunityIcons } from '@expo/vector-icons'; // Biblioteca de ícones
+import { themas } from '../global/themes';
 
 const Mais = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -40,6 +41,7 @@ const Mais = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: themas.Colors.bgScreen,
     flex: 1,
     justifyContent: 'flex-start',  // Alinha o conteúdo no final (parte inferior)
     alignItems: 'flex-end',  // Alinha o conteúdo à direita
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 5,  // Reduzindo o padding para diminuir o tamanho do botão
-    backgroundColor: '#f0f0f0',  // Exemplo de cor de fundo, pode ser ajustada
+    backgroundColor: themas.Colors.bgScreen,  // Exemplo de cor de fundo, pode ser ajustada
     borderRadius: 25,  // Torna o botão arredondado
     justifyContent: 'center',
     alignItems: 'center',

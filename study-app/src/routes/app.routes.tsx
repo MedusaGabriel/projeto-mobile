@@ -5,6 +5,7 @@ import Home from '../pages/home';
 import Metas from '../pages/metas';
 import Materias from '../pages/materias';
 import Mais from '../pages/mais';
+import { themas } from '../global/themes';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,15 +29,18 @@ export default function AppRouter() {
 
             return <Image source={iconName} style={{ width: size, height: size, tintColor: color }} />;
           },
-          tabBarActiveTintColor: '#007BFF',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-          paddingTop: 10,
-          paddingBottom: 50, // Adicionado para margem inferior
-          backgroundColor: '#FFF',
-        },
+          tabBarActiveTintColor: themas.Colors.blueLigth,
+          tabBarInactiveTintColor: themas.Colors.secondary,
+          tabBarStyle: {  
+            paddingTop: 10,
+            paddingBottom: 50, // Margem inferior
+            backgroundColor: themas.Colors.bgSecondary,
+            elevation: 0, // Remove sombra no Android
+            shadowOpacity: 0, // Remove sombra no iOS
+            borderTopWidth: 0, // Remove borda superior
+          },
           headerShown: false,
-          headerTintColor: '#FFF',
+          headerTintColor: themas.Colors.secondary,
         })}
       >
         <Tab.Screen name="Home" component={Home} />
