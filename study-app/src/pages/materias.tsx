@@ -85,7 +85,7 @@ const Materias = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[{ paddingTop: 50 }, styles.container]}>
       <Text style={styles.text}>Plano de Estudo</Text>
 
       {isAdding && (

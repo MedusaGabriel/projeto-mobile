@@ -102,7 +102,7 @@ const Metas = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[{ paddingTop: 50 }, styles.container]}>
       <Text style={styles.title}>Defina suas Metas</Text>
       <Text style={styles.subtitle}>Organize seus objetivos e alcance suas conquistas!</Text>
 

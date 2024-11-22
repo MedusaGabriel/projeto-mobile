@@ -31,9 +31,10 @@ export default function AppRouter() {
           tabBarActiveTintColor: '#007BFF',
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
-            paddingTop: 10,
-            backgroundColor: '#FFF',
-          },
+          paddingTop: 10,
+          paddingBottom: 50, // Adicionado para margem inferior
+          backgroundColor: '#FFF',
+        },
           headerShown: false,
           headerTintColor: '#FFF',
         })}

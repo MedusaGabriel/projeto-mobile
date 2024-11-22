@@ -23,7 +23,7 @@ const Mais = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[{ paddingTop: 50 }, styles.container]}>
       <View style={styles.content}>
         <Text style={styles.text}>Fazer Logout</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.button}>

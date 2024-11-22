@@ -38,7 +38,13 @@ export default function Cadastro() {
                 username: username,
                 email: email,
                 senha: password,
-                criação: new Date().toISOString() // Adiciona a data de criação
+                criação: new Date().toLocaleString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                }) // Adiciona a data de criação formatada
             });
             console.log("Usuário salvo com sucesso no Firestore!");
         } catch (error) {

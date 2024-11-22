@@ -28,7 +28,7 @@ const Curso = () => {
   }, []);
 
   // Função para salvar o curso no Firestore
-  const salvarCursoNoFirestore = async (uid: string, curso: string) => {
+  const salvarCursoNoFirestore = async (uid: string, curso: string) => {  
     try {
       if (!uid || !curso) {
         Alert.alert('Erro', 'Usuário ou curso não informado');
@@ -64,7 +64,7 @@ const Curso = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Para o que você tá estudando?</Text>
+      <Text style={styles.text}>Qual o seu nível de ensino?</Text>
 
       <View style={styles.boxMid}>
         {/* Dropdown para seleção de cursos */}
@@ -72,7 +72,7 @@ const Curso = () => {
           value={curso}
           onValueChange={setCurso}
           placeholder={{
-            label: 'Qual o seu nível de ensino?',
+            label: 'Default',
             value: null,
           }}
           items={[
@@ -110,19 +110,17 @@ const pickerSelectStyles = StyleSheet.create({
     pointerEvents: 'none', // Impede que o campo de texto seja clicado
   },
   inputAndroid: {
-    height: 50, // Ajustado para o Android também
-    width: '80%', // Ajuste de largura para o dropdown
-    borderColor: '#ccc', // Cor do borda mais suave
+    height: 48, // Altura padrão
+    width: '90%', // Largura padrão
+    borderColor: '#ccc', // Cor de borda suave
     borderWidth: 1,
     borderRadius: 8,
-    paddingLeft: 12, // Padding mais confortável
+    paddingHorizontal: 12, // Padding horizontal uniforme
     marginTop: 10,
     fontSize: 16,
-    paddingRight: 40, // Espaço à direita para o ícone
-    alignSelf: 'center', // Centraliza horizontalmente
-    backgroundColor: '#fff', // Cor de fundo branca
-    pointerEvents: 'none', // Impede que o campo de texto seja clicado
-  },
+    alignSelf: 'center', // Centralizado horizontalmente
+    backgroundColor: '#fff', // Fundo branco
+},
   iconContainer: {
     position: 'absolute', 
     top: 14, // Ajusta a posição do ícone dentro do campo
