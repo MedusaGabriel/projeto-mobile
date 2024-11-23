@@ -8,6 +8,7 @@ import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../services/firebaseConfig";
 import { doc, setDoc } from 'firebase/firestore';
+import { themas } from "../global/themes";
 
 export default function Cadastro() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -178,6 +179,9 @@ const styles = StyleSheet.create({
     },
     textBottomCreate: {
         fontSize: 16,
-        color: '#878af6',
+        bottom: -5,
+        color: themas.Colors.blueLigth,
+        fontFamily: themas.Fonts.regular,
+        marginLeft: 3,
     },
 });
