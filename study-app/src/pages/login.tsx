@@ -44,32 +44,33 @@ export default function Login() {
     }, [error]);
 
     return (
+        
         <View style={styles.container}>
             <View style={styles.boxTop}>
-                <Image
-                    source={Logo}
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
+            <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+            <Text style={styles.title}>Fazer login</Text>
             </View>
-            <View style={styles.boxMid}>
+            <View style={styles.boxCenter}>
                 <Input
                 placeholder="Email"
+                height={55}
+                IconRigth={MaterialIcons}
+                iconRightName="email"
                 placeholderTextColor={themas.Colors.secondary}
                 value={email}
                 onChangeText={setEmail}
-                style={styles.input}
             />
                 <Input
                 placeholder="Senha"
                 placeholderTextColor={themas.Colors.secondary}
                 value={password}
+                height={55}
+                IconRigth={Octicons}
                 onChangeText={setPassword}
-                IconRigth={password.length > 0 ? Octicons : undefined}
                 iconRightName={showPassword ? "eye-closed" : "eye"}
                 onIconRigthPress={() => setShowPassword(!showPassword)}
                 secureTextEntry={showPassword}
-                style={[styles.input, { paddingRight: 50 }]}  // Aumenta o paddingRight para acomodar o ícone
+                style={{ backgroundColor: themas.Colors.bgScreen }}
             />
             </View>
             <View style={styles.boxBottom}>
@@ -92,38 +93,38 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: themas.Colors.bgSecondary,
     },
+    boxCenter: {
+        flex: 0.5,
+        width: '90%',
+        justifyContent: 'center',
+        marginBottom: 50,
+    },
     boxTop: {
-        height: Dimensions.get('window').height / 3,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    boxMid: {
-        height: Dimensions.get('window').height / 6,  // Aumenta a altura da caixa central
-        width: '100%',
-        paddingHorizontal: 37,
+        marginBottom: 0,
     },
     boxBottom: {
-        height: Dimensions.get('window').height / 5,
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
+        paddingBottom: 20,
     },
     logo: {
         width: 180,
         height: 180,
-        marginTop: 40,
+        marginTop: 0,
+        marginBottom: 75,
+
     },
-    input: {
-        paddingLeft: 10,  // Aumenta o paddingLeft para mover o texto para a esquerda
-        paddingRight: 50, // Espaço fixo para o ícone de olho
-        paddingVertical: 20,
-        height: 60,
-        shadowRadius: 8,
-        elevation: 5,
-        backgroundColor: themas.Colors.primary,
-        fontFamily: themas.Fonts.regular,
-    },    
+    title: {
+        fontSize: 24,
+        color: '#fff',
+        fontWeight: 'bold',
+        marginBottom: -40,
+        
+    },
     textBottom: {
         position: "absolute",
         bottom: 50,

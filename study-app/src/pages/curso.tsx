@@ -7,6 +7,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import RNPickerSelect from 'react-native-picker-select';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Importando o ícone
+import { themas } from '../global/themes'; 
 
 const Curso = () => {
   const [curso, setCurso] = useState<string>('');
@@ -64,7 +65,7 @@ const Curso = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Qual o seu nível de ensino?</Text>
+      <Text style={styles.title}>Qual seu nível de ensino?</Text>
 
       <View style={styles.boxMid}>
         {/* Dropdown para seleção de cursos */}
@@ -72,7 +73,8 @@ const Curso = () => {
           value={curso}
           onValueChange={setCurso}
           placeholder={{
-            label: 'Default',
+            backgroundColor: themas.Colors.bgSecondary,
+            label: 'Qual o seu nível de ensino?',
             value: null,
           }}
           items={[
@@ -96,28 +98,32 @@ const Curso = () => {
 // Estilos para o PickerSelect
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    height: 50, // Ajustado para um tamanho mais adequado
+    height: 55, // Ajustado para um tamanho mais adequado
     width: '80%', // Ajuste de largura para o dropdown
-    borderColor: '#ccc', // Cor do borda mais suave
+    borderColor: 'themas.Colors.bgScreen',
     borderWidth: 1,
     borderRadius: 8,
     paddingLeft: 12, // Padding mais confortável
     marginTop: 10,
     fontSize: 16,
+    fontFamily: themas.Fonts.regular,
+    color: themas.Colors.secondary,
     paddingRight: 40, // Espaço à direita para o ícone
     alignSelf: 'center', // Centraliza horizontalmente
-    backgroundColor: '#fff', // Cor de fundo branca
+    backgroundColor: themas.Colors.bgScreen,
     pointerEvents: 'none', // Impede que o campo de texto seja clicado
   },
   inputAndroid: {
-    height: 48, // Altura padrão
+    height: 55, // Altura padrão
     width: '90%', // Largura padrão
-    borderColor: '#ccc', // Cor de borda suave
+    borderColor: 'themas.Colors.bgScreen',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12, // Padding horizontal uniforme
     marginTop: 10,
     fontSize: 16,
+    fontFamily: themas.Fonts.regular,
+    color: themas.Colors.secondary,
     alignSelf: 'center', // Centralizado horizontalmente
     backgroundColor: '#fff', // Fundo branco
 },
@@ -134,7 +140,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20, // Adicionando padding horizontal para não ficar tão colado nas laterais
+    paddingHorizontal: 20,
+    backgroundColor: themas.Colors.bgSecondary,
   },
   text: {
     marginTop: 35,
@@ -153,6 +160,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  title: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+},
 });
 
 export default Curso;

@@ -81,38 +81,47 @@ export default function Cadastro() {
         <View style={styles.container}>
             <View style={styles.boxTop}>
                 <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-                <Text style={styles.title}>Crie sua conta</Text>
+                <Text style={styles.title}>Cadastre-se</Text>
             </View>
             <View style={styles.boxCenter}>
                 <Input
-                    title="NOME DE USUÁRIO"
+                    placeholder="Nome de usuário"
+                    placeholderTextColor={themas.Colors.secondary}
                     value={username}
+                    height={55}
                     onChangeText={setUsername}
                     IconRigth={MaterialIcons}
                     iconRightName="person"
-                    style={styles.input}
+                    style={{ backgroundColor: themas.Colors.bgScreen }}
                 />
                 <Input
-                    title="ENDEREÇO E-MAIL"
+                    placeholder="Endereço de e-mail"
+                    placeholderTextColor={themas.Colors.secondary}
+                    height={55}
                     value={email}
                     onChangeText={setEmail}
                     IconRigth={MaterialIcons}
                     iconRightName="email"
-                    style={styles.input}
+                    style={{ backgroundColor: themas.Colors.bgScreen }}
+
                 />
                 <Input
-                    title="SENHA"
+                    placeholder="Senha"
+                    placeholderTextColor={themas.Colors.secondary}
                     value={password}
+                    height={55}
                     onChangeText={setPassword}
                     IconRigth={Octicons}
                     iconRightName={showPassword ? "eye-closed" : "eye"}
                     onIconRigthPress={() => setShowPassword(!showPassword)}
                     secureTextEntry={showPassword}
-                    style={styles.input}
+                    style={{ backgroundColor: themas.Colors.bgScreen }}
+
                 />
             </View>
             <View style={styles.boxBottom}>
-                <Button text="CADASTRAR" loading={loading} onPress={handleRegister} />
+                <Button text="Cadastrar" loading={loading} onPress={handleRegister} />
+                </View>
                 <Text style={styles.textBottom}>
                     Já tem conta? 
                     <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -120,7 +129,7 @@ export default function Cadastro() {
                     </TouchableOpacity>
                 </Text>
             </View>
-        </View>
+
     );
 }
 
@@ -129,19 +138,20 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#2D2D2D', // Cor de fundo mais clara (cinza)
+        backgroundColor: themas.Colors.bgSecondary,
         paddingHorizontal: 20,
+        width: '100%',
     },
     boxTop: {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 30,  // Aumentei o espaçamento superior
+        marginBottom: -5,  // Aumentei o espaçamento superior
     },
     title: {
         fontSize: 24,
         color: '#fff',
-        fontWeight: 'bold',
+        fontWeight: 'bold', 
     },
     boxCenter: {
         flex: 0.5,
@@ -155,28 +165,22 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingBottom: 20,
     },
-    input: {
-        backgroundColor: '#fff', // Cor de fundo dos campos
-        borderRadius: 10,
-        marginBottom: 15,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        shadowColor: '#000', // Sombras para dar profundidade
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 5, // Elevação para Android
-    },
+    
     logo: {
-        width: 120, // Ajuste do tamanho da logo
-        height: 120, // Ajuste do tamanho da logo
-        marginBottom: 20, // Ajuste do espaçamento inferior da logo
+        width: 180, // Ajuste do tamanho da logo
+        height: 180, // Ajuste do tamanho da logo
+        marginBottom: 50, // Ajuste do espaçamento inferior da logo
     },
     textBottom: {
+        position: "absolute",
+        bottom: 50,
         fontSize: 16,
-        color: 'gray',
-        marginTop: 20,
-    },
+        color: themas.Colors.secondary,
+        fontFamily: themas.Fonts.regular,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },   
+
     textBottomCreate: {
         fontSize: 16,
         bottom: -5,

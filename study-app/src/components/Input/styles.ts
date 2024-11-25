@@ -4,11 +4,11 @@ import { themas } from "../../global/themes";
 export const style = StyleSheet.create({
     boxInput: {
         width: '100%',
-        height: 0,
+        height: 50,
         borderWidth: 0, // Remover borda
         borderRadius: 10, // Menos arredondado
         backgroundColor: themas.Colors.bgScreen, // Manter a cor bgScreen
-        marginTop: 10,
+        marginTop: 23,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
@@ -17,9 +17,9 @@ export const style = StyleSheet.create({
     input: {
         color: themas.Colors.primary,
         height: '100%',
-        width: '100%',
+        paddingVertical: 10,
         fontSize: 16,  // Tamanho de fonte maior
-        borderRadius: 40,
+        borderRadius: 10,
         fontFamily: themas.Fonts.regular,
     },
     titleInput: {
