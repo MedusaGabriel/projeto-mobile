@@ -117,7 +117,7 @@ const MetasList: React.FC = () => {
         keyExtractor={(item) => item.id}
       />
       ) : (
-        <Text style={styles.subtitulo}>Sem metas registradas, registre a sua!</Text>
+        <Text style={styles.subtitulo}>Sem metas registradas, comece agora!</Text>
       )}
     </View>
   );

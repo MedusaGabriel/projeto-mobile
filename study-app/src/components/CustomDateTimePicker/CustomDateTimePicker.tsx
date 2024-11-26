@@ -2,22 +2,22 @@ import React from "react";
 import { Platform, View, StyleSheet, Modal } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-interface CustomDateTimePickerProps {
-  type: "date" | "time";
-  show: boolean;
-  setShow: (show: boolean) => void;
-  onDateChange: (date: Date) => void;
-  selectedDate: Date;  // Recebe o valor da data atual
-}
+  interface CustomDateTimePickerProps {
+    type: "date" | "time";
+    show: boolean;
+    setShow: (show: boolean) => void;
+    onDateChange: (date: Date) => void;
+    selectedDate: Date;  // Recebe o valor da data atual
+  }
 
-const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
-  type,
-  show,
-  setShow,
-  onDateChange,
-  selectedDate, // Adiciona selectedDate como prop
-}) => {
-  const isIOS = Platform.OS === "ios";
+  const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
+    type,
+    show,
+    setShow,
+    onDateChange,
+    selectedDate, // Adiciona selectedDate como prop
+  }) => {
+    const isIOS = Platform.OS === "ios";
 
   const handleChange = (_event: any, selectedDate?: Date) => {
     setShow(false);
@@ -58,9 +58,10 @@ const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
+    zIndex: 9999,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(255,255,255,0.9)",
   },
 });
 

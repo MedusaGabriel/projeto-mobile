@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Dimensions, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Dimensions, TouchableOpacity, Alert, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from "react-native";
 import Logo from '../assets/logo.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -44,45 +44,51 @@ export default function Login() {
     }, [error]);
 
     return (
-        
-        <View style={styles.container}>
-            <View style={styles.boxTop}>
-            <Image source={Logo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.title}>Fazer login</Text>
-            </View>
-            <View style={styles.boxCenter}>
-                <Input
-                placeholder="Email"
-                height={55}
-                IconRigth={MaterialIcons}
-                iconRightName="email"
-                placeholderTextColor={themas.Colors.secondary}
-                value={email}
-                onChangeText={setEmail}
-            />
-                <Input
-                placeholder="Senha"
-                placeholderTextColor={themas.Colors.secondary}
-                value={password}
-                height={55}
-                IconRigth={Octicons}
-                onChangeText={setPassword}
-                iconRightName={showPassword ? "eye-closed" : "eye"}
-                onIconRigthPress={() => setShowPassword(!showPassword)}
-                secureTextEntry={showPassword}
-                style={{ backgroundColor: themas.Colors.bgScreen }}
-            />
-            </View>
-            <View style={styles.boxBottom}>
-                <Button text="Entrar" loading={loading} onPress={() => getLogin()} />
-            </View>
-            <Text style={styles.textBottom}>
-                Não tem conta?
-                <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-                    <Text style={styles.textBottomCreate}> Crie agora</Text>
-                </TouchableOpacity>
-            </Text>
-        </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <View style={styles.container}>
+                    <View style={styles.boxTop}>
+                        <Image source={Logo} style={styles.logo} resizeMode="contain" />
+                        <Text style={styles.title}>Fazer login</Text>
+                    </View>
+                    <View style={styles.boxCenter}>
+                        <Input
+                            placeholder="Email"
+                            height={55}
+                            IconRight={MaterialIcons}
+                            iconRightName="email"
+                            placeholderTextColor={themas.Colors.secondary}
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+                        <Input
+                            placeholder="Senha"
+                            placeholderTextColor={themas.Colors.secondary}
+                            value={password}
+                            height={55}
+                            IconRight={Octicons}
+                            onChangeText={setPassword}
+                            iconRightName={showPassword ? "eye-closed" : "eye"}
+                            onIconRightPress={() => setShowPassword(!showPassword)}
+                            secureTextEntry={showPassword}
+                            style={{ backgroundColor: themas.Colors.bgScreen }}
+                        />
+                    </View>
+                    <View style={styles.boxBottom}>
+                        <Button text="Entrar" loading={loading} onPress={() => getLogin()} />
+                    </View>
+                    <Text style={styles.textBottom}>
+                        Não tem conta?
+                        <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+                            <Text style={styles.textBottomCreate}> Crie agora</Text>
+                        </TouchableOpacity>
+                    </Text>
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -116,14 +122,12 @@ const styles = StyleSheet.create({
         height: 180,
         marginTop: 0,
         marginBottom: 75,
-
     },
     title: {
         fontSize: 24,
         color: '#fff',
         fontWeight: 'bold',
         marginBottom: -40,
-        
     },
     textBottom: {
         position: "absolute",
@@ -133,7 +137,7 @@ const styles = StyleSheet.create({
         fontFamily: themas.Fonts.regular,
         flexDirection: 'row',
         alignItems: 'center',
-    },   
+    },
     textBottomCreate: {
         fontSize: 16,
         bottom: -5,
@@ -142,4 +146,3 @@ const styles = StyleSheet.create({
         marginLeft: 3,
     },
 });
-

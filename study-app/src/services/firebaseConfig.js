@@ -21,7 +21,6 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
 
-
 // Inicializa o Firestore
 const firestore = getFirestore(app);
 

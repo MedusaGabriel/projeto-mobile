@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useRef, useState, ReactNode } from "react";
 import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
-import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
@@ -37,12 +37,15 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
 
   const onOpen = () => modalizeRef.current?.open();
-  const onClose = () => modalizeRef.current?.close();
+  const onClose = () => {
+    modalizeRef.current?.close();
+    resetForm();
+  };
 
   const handleEdit = (goal: any) => {
     setTitulo(goal.titulo);
     setDescricao(goal.descricao);
-    setDataConclusao(new Date(goal.dataConclusao)); // Converte a data de string para Date
+    setDataConclusao(new Date(goal.dataConclusao)); 
     onOpen();
   };
 
@@ -85,13 +88,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       id: Date.now(),
       titulo,
       descricao,
-      dataConclusao: dataConclusao.toLocaleString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }),
+      dataConclusao: format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR }),
     };
   
     try {
@@ -154,7 +151,6 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
             <Input
               title="Descrição:"
               numberOfLines={1}
-              height={40}
               textAlignVertical="top"
               labelStyle={styles.label}
               value={descricao} // Usando o nome traduzido
@@ -164,28 +160,44 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
             <Text style={styles.charCounter}>{30 - descricao.length} caracteres restantes</Text>
           </View>
           <View style={styles.dateContainer}>
-            <TouchableOpacity 
-              onPress={() => setShowDatePicker(true)}  // Abre o DatePicker
+            <View style={styles.dateLabelContainer}>
+              <Text style={styles.labeldate}>Data prevista para conclusão:</Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
               style={styles.dateInputContainer}
             >
               <Input
-                height={35}
-                title="Data prevista para conclusão:"
-                labelStyle={styles.labeldate}
-                editable={false}  // Impede a edição direta do input
-                value={formattedDate}  // Exibe a data formatada
-                style={styles.datestyle} 
+              style={styles.dateInputContainer}
+                onPress={() => setShowDatePicker(true)}
+                boxStyle={{
+                  marginTop: -4,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                }}
+                customPaddingLeft={0}
+                inputStyle={{
+                  textAlign: 'center',
+                  textAlignVertical: 'center',
+                  width: '100%',
+                }}
+                editable={false}
+                value={formattedDate} // Exibe a data formatada
               />
             </TouchableOpacity>
 
+            {/* Date Picker */}
             {showDatePicker && (
-              <View style={{ backgroundColor:themas.Colors.blueLigth}}>
+              <View style={styles.datePickerWrapper}>
                 <CustomDateTimePicker
                   type="date"
-                  onDateChange={setDataConclusao} // Atualiza a data quando o usuário escolhe uma nova
-                  show={showDatePicker} // Controle para mostrar o DatePicker
-                  setShow={setShowDatePicker} // Função para fechar o picker quando o usuário termina
-                  selectedDate={dataConclusao}                  />
+                  onDateChange={setDataConclusao}
+                  show={showDatePicker}
+                  setShow={setShowDatePicker}
+                  selectedDate={dataConclusao}
+                />
               </View>
             )}
           </View>
@@ -196,6 +208,21 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
 
   return (
     <GoalContext.Provider value={{ onOpen, goalsList }}>
+      {loading && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={loading}
+          statusBarTranslucent
+        >
+          <View style={styles.loadingContainer}>
+            <View style={styles.loadingBox}>
+              <ActivityIndicator size="large" color={themas.Colors.primary} />
+              <Text style={styles.loadingText}>Carregando...</Text>
+            </View>
+          </View>
+        </Modal>
+      )}
       {children}
       <Modalize
         ref={modalizeRef}
@@ -207,14 +234,6 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           zIndex: 1
         }}
         >
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <View style={styles.loadingBox}>
-              <ActivityIndicator size="large" color={themas.Colors.primary} />
-              <Text style={styles.loadingText}>Carregando...</Text>
-            </View>
-          </View>
-        )}
         {_container()}
       </Modalize>
     </GoalContext.Provider>
@@ -254,31 +273,38 @@ const styles = StyleSheet.create({
     color: themas.Colors.secondary,
     marginBottom: -18,  // Ajuste para espaçamento entre o label e o input
   },
-  labeldate: {
-    fontFamily: themas.Fonts.medium,
-    color: themas.Colors.secondary,
-    marginBottom: 8,  // Aumente o espaço entre a label e o input
-    paddingEnd: 25,
-  },
   inputContainer: {
     width: '100%',
     alignItems: 'flex-start', 
     alignSelf: 'flex-end'
   },
-  datestyle : {
-    paddingLeft: 50,
+  dateContainer: { //CONTAINNER GERAL COM TUDO
+    marginTop: 20,
+    marginBottom: 20,
+    flexDirection: 'row', // Alinha os itens horizontalmente
+    alignItems: 'center', // Centraliza verticalmente os itens
+    justifyContent: 'space-between', // Ajusta os espaços entre os itens
+    borderColor: 'white',
   },
-  dateContainer: {
-    flexDirection: 'row',  
-    alignItems: 'flex-end', 
-    justifyContent: 'space-between',  
-    width: '100%',
-    marginBottom: 0,
+  dateLabelContainer: { // RESPONSAVEL PELA BOX DO TEXTO
+    width: '50%', // Atribui 50% de largura para o texto
+  },
+  labeldate: { //TEXTO
+    fontFamily: themas.Fonts.medium,
+    color: themas.Colors.secondary,
   },
   dateInputContainer: {
     width: '50%',
-    marginBottom: 16,
-    flexDirection: 'row',  // Lado a lado
+  },
+  datePickerWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,  // Adicione esta linha para garantir que o conteúdo ocupe toda a altura disponível
+    justifyContent: 'center',  // Centraliza verticalmente
+    alignItems: 'center',  // Centraliza horizontalmente
+    width: '100%',  // Garante que o conteúdo ocupe toda a largura disponível
+    zIndex: 10,  // Certifique-se de que o conteúdo fique acima de outros elementos (opcional)
   },
   charCounter: {
     marginTop: 5,

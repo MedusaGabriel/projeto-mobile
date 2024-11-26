@@ -33,13 +33,14 @@ const styles = StyleSheet.create({
   button: {
     position: "absolute",
     bottom: 15,
-    width: 50,  // Tamanho do botão
-    height: 50, // Tamanho do botão
+    width: 60, 
+    height: 60,
     backgroundColor: themas.Colors.blueLigth, // Cor de fundo azul
     borderRadius: 30, // Botão redondo
     justifyContent: 'center', // Centralizar o conteúdo dentro do botão
     alignItems: 'center', // Centralizar o conteúdo dentro do botão
     elevation: 5,  // Sombra para um efeito 3D
+    zIndex: 10, // Garantir que o botão fique acima de outros elementos
   },
   buttonText: {
     fontSize: 16,

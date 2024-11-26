@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
+import { StyleSheet, TouchableOpacity, Alert, Image, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from "react-native";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 import { Text, View } from 'react-native';
@@ -15,13 +15,14 @@ export default function Cadastro() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState(''); 
+    const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
-    
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+
     const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error] =
         useCreateUserWithEmailAndPassword(auth);
-    
+
     // Verifica se o usuário foi criado com sucesso ou se houve um erro
     useEffect(() => {
         if (firebaseUser) {
@@ -57,7 +58,6 @@ export default function Cadastro() {
     // Verifica se houve erro
     useEffect(() => {
         if (error) {
-            // Verifica se o erro é de email já em uso
             if (error.code === 'auth/email-already-in-use') {
                 Alert.alert('Erro', 'Este e-mail já está em uso. Tente outro.');
             } else {
@@ -66,6 +66,7 @@ export default function Cadastro() {
         }
     }, [error]);
 
+    // Função para registrar o usuário
     async function handleRegister() {
         if (!email || !password || !username) {
             return Alert.alert('Atenção!!', 'Informe os campos obrigatórios!');
@@ -78,58 +79,65 @@ export default function Cadastro() {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.boxTop}>
-                <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-                <Text style={styles.title}>Cadastre-se</Text>
-            </View>
-            <View style={styles.boxCenter}>
-                <Input
-                    placeholder="Nome de usuário"
-                    placeholderTextColor={themas.Colors.secondary}
-                    value={username}
-                    height={55}
-                    onChangeText={setUsername}
-                    IconRigth={MaterialIcons}
-                    iconRightName="person"
-                    style={{ backgroundColor: themas.Colors.bgScreen }}
-                />
-                <Input
-                    placeholder="Endereço de e-mail"
-                    placeholderTextColor={themas.Colors.secondary}
-                    height={55}
-                    value={email}
-                    onChangeText={setEmail}
-                    IconRigth={MaterialIcons}
-                    iconRightName="email"
-                    style={{ backgroundColor: themas.Colors.bgScreen }}
-
-                />
-                <Input
-                    placeholder="Senha"
-                    placeholderTextColor={themas.Colors.secondary}
-                    value={password}
-                    height={55}
-                    onChangeText={setPassword}
-                    IconRigth={Octicons}
-                    iconRightName={showPassword ? "eye-closed" : "eye"}
-                    onIconRigthPress={() => setShowPassword(!showPassword)}
-                    secureTextEntry={showPassword}
-                    style={{ backgroundColor: themas.Colors.bgScreen }}
-
-                />
-            </View>
-            <View style={styles.boxBottom}>
-                <Button text="Cadastrar" loading={loading} onPress={handleRegister} />
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <View style={styles.container}>
+                    <View style={styles.boxTop}>
+                        <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+                        <Text style={styles.title}>Cadastre-se</Text>
+                    </View>
+                    <View style={styles.boxCenter}>
+                        <Input
+                            placeholder="Nome de usuário"
+                            placeholderTextColor={themas.Colors.secondary}
+                            value={username}
+                            height={55}
+                            onChangeText={setUsername}
+                            IconRight={MaterialIcons}
+                            iconRightName="person"
+                            style={{ backgroundColor: themas.Colors.bgScreen }}
+                        />
+                        <Input
+                            placeholder="Endereço de e-mail"
+                            placeholderTextColor={themas.Colors.secondary}
+                            height={55}
+                            value={email}
+                            onChangeText={setEmail}
+                            IconRight={MaterialIcons}
+                            iconRightName="email"
+                            style={{ backgroundColor: themas.Colors.bgScreen }}
+                        />
+                        <Input
+                            placeholder="Senha"
+                            placeholderTextColor={themas.Colors.secondary}
+                            value={password}
+                            height={55}
+                            onChangeText={setPassword}
+                            IconRight={Octicons}
+                            iconRightName={showPassword ? "eye-closed" : "eye"}
+                            onIconRightPress={() => setShowPassword(!showPassword)}
+                            secureTextEntry={showPassword}
+                            style={{ backgroundColor: themas.Colors.bgScreen }}
+                        />
+                    </View>
+                    <View style={styles.boxBottom}>
+                        <Button text="Cadastrar" loading={loading} onPress={handleRegister} />
+                    </View>
+                    {/* Condicionalmente renderiza a mensagem "Já tem conta? Faça Login" */}
+                    {!keyboardVisible && (
+                        <Text style={styles.textBottom}>
+                            Já tem conta? 
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Text style={styles.textBottomCreate}> Faça Login</Text>
+                            </TouchableOpacity>
+                        </Text>
+                    )}
                 </View>
-                <Text style={styles.textBottom}>
-                    Já tem conta? 
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.textBottomCreate}> Faça Login</Text>
-                    </TouchableOpacity>
-                </Text>
-            </View>
-
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -146,18 +154,18 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: -5,  // Aumentei o espaçamento superior
+        marginBottom: -5,
     },
     title: {
         fontSize: 24,
         color: '#fff',
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
     },
     boxCenter: {
         flex: 0.5,
         width: '100%',
         justifyContent: 'center',
-        marginBottom: 30,  // Ajuste de espaçamento entre campos e o botão
+        marginBottom: 30,
     },
     boxBottom: {
         width: '100%',
@@ -165,11 +173,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingBottom: 20,
     },
-    
     logo: {
-        width: 180, // Ajuste do tamanho da logo
-        height: 180, // Ajuste do tamanho da logo
-        marginBottom: 50, // Ajuste do espaçamento inferior da logo
+        width: 180,
+        height: 180,
+        marginBottom: 50,
     },
     textBottom: {
         position: "absolute",
@@ -179,8 +186,7 @@ const styles = StyleSheet.create({
         fontFamily: themas.Fonts.regular,
         flexDirection: 'row',
         alignItems: 'center',
-    },   
-
+    },
     textBottomCreate: {
         fontSize: 16,
         bottom: -5,
