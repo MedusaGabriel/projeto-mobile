@@ -108,16 +108,14 @@ const MetasList: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Removendo a StatusBar */}
-      <StatusBar hidden={true} />
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : metas.length > 0 ? (
-        <FlatList
-          data={metas}
-          renderItem={renderMeta}
-          keyExtractor={(item) => item.id}
-        />
+    {loading ? (
+      <ActivityIndicator size="large" color={themas.Colors.primary} />
+    ) : metas.length > 0 ? (
+      <FlatList
+        data={metas}
+        renderItem={renderMeta}
+        keyExtractor={(item) => item.id}
+      />
       ) : (
         <Text style={styles.subtitulo}>Sem metas registradas, registre a sua!</Text>
       )}

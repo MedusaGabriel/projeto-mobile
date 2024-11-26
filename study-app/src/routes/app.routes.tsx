@@ -55,12 +55,14 @@ export default function AppRouter() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen 
         name="Metas" 
-        component={() => ( // Envolvendo `Metas` com `MetasModal`
+        options={{ headerShown: false }}
+      >
+        {() => (
           <MetasModal>
             <Metas />
           </MetasModal>
         )}
-      />
+      </Tab.Screen>
       <Tab.Screen name="Atividades" component={Atividades} />
       <Tab.Screen name="Preferências" component={Mais} />
     </Tab.Navigator>
