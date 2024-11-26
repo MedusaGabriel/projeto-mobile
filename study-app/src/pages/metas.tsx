@@ -5,6 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useGoal } from '../components/Modal/metasmodal';
 import MetasList from '../components/Listas/metaslist';
 export default function Metas() {
+  
   const { onOpen } = useGoal();
 
   return (
@@ -13,7 +14,7 @@ export default function Metas() {
       <TouchableOpacity style={styles.button} onPress={onOpen}>
         <AntDesign name="plus" size={40} color={themas.Colors.primary} />
       </TouchableOpacity>
-      <MetasList />
+      <MetasList/>
     </View>
   );
 }
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   title: { 
     fontSize: 20, 
     color: themas.Colors.primary, 
-    fontFamily: themas.Fonts.bold
+    fontFamily: themas.Fonts.bold,
   },
   button: {
     position: "absolute",

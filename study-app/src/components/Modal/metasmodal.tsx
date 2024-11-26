@@ -7,7 +7,7 @@ import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns'; 
 import { ptBR } from 'date-fns/locale';
-import { serverTimestamp, addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
+import { serverTimestamp, addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from "../../services/firebaseConfig";
 
 const FieldValue = { serverTimestamp };
@@ -15,9 +15,18 @@ const FieldValue = { serverTimestamp };
 interface GoalContextProps {
   onOpen: () => void;
   goalsList: any[];
+  setGoalsList: React.Dispatch<React.SetStateAction<Goal[]>>,
 }
 
 export const GoalContext = createContext<GoalContextProps>({} as GoalContextProps);
+
+interface Goal {
+  id: number;
+  titulo: string;
+  descricao: string;
+  dataConclusao: string;
+  concluido: boolean; 
+}
 
 export const MetasModal = ({ children }: { children: ReactNode }) => {
   const modalizeRef = useRef<Modalize>(null);
@@ -25,13 +34,6 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   const [descricao, setDescricao] = useState(''); // Renomeado de description para descricao
   const [dataConclusao, setDataConclusao] = useState(new Date()); // Renomeado de expectedDate para dataConclusao
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  interface Goal {
-    id: number;
-    titulo: string;
-    descricao: string;
-    dataConclusao: string;
-  }
 
   const [goalsList, setGoalsList] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,6 +44,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
     resetForm();
   };
 
+  // Função para editar a tarefa
   const handleEdit = (goal: any) => {
     setTitulo(goal.titulo);
     setDescricao(goal.descricao);
@@ -78,6 +81,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Função para salvar a meta no Firestore
   const handleSave = async () => {
     if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
       Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
@@ -85,10 +89,10 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
     }
   
     const newGoal = {
-      id: Date.now(),
       titulo,
       descricao,
       dataConclusao: format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR }),
+      concluido: false,
     };
   
     try {
@@ -99,22 +103,16 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
         Alert.alert("Erro", "Usuário não autenticado.");
         return;
       }
-  
-      // Referência à coleção "users" -> UID do usuário -> coleção "metas"
-      const metasCollectionRef = collection(db, "users", user.uid, "metas");
-  
-      // Adiciona a nova meta na coleção "metas" do usuário
-      await addDoc(metasCollectionRef, newGoal);
-  
-      resetForm();
       onClose();
+      resetForm();
+
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao salvar a meta. Tente novamente.");
       console.error("Erro ao salvar meta no Firebase:", error);
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   const resetForm = () => {
     setTitulo('');
@@ -207,7 +205,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <GoalContext.Provider value={{ onOpen, goalsList }}>
+    <GoalContext.Provider value={{ onOpen, goalsList, setGoalsList }}>
       {loading && (
         <Modal
           transparent
@@ -271,7 +269,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: themas.Fonts.medium,
     color: themas.Colors.secondary,
-    marginBottom: -18,  // Ajuste para espaçamento entre o label e o input
+
   },
   inputContainer: {
     width: '100%',
