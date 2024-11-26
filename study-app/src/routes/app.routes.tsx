@@ -3,13 +3,17 @@ import React from 'react';
 import { Image } from 'react-native';
 import Home from '../pages/home';
 import Metas from '../pages/metas';
-import Materias from '../pages/materias';
+import Atividades from '../pages/atividades';
 import Mais from '../pages/mais';
 import { themas } from '../global/themes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MetasModal from '../components/Modal/metasmodal';
 
 const Tab = createBottomTabNavigator();
 
 export default function AppRouter() {
+  const insets = useSafeAreaInsets(); // Obtém o valor do safe area
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -21,8 +25,8 @@ export default function AppRouter() {
             iconName = require('../assets/icons/iconhome.png');
           } else if (route.name === 'Metas') {
             iconName = require('../assets/icons/iconmetas.png');
-          } else if (route.name === 'Matérias') {
-            iconName = require('../assets/icons/iconmaterias.png');
+          } else if (route.name === 'Atividades') {
+            iconName = require('../assets/icons/iconatividades.png');
           } else if (route.name === 'Preferências') {
             iconName = require('../assets/icons/iconmais.png');
           }
@@ -33,12 +37,12 @@ export default function AppRouter() {
         tabBarInactiveTintColor: themas.Colors.secondary,
         tabBarStyle: {  
           paddingTop: 10,
-          paddingBottom: 40, // Aumenta o espaço abaixo
+          paddingBottom: insets.bottom + 20, // Aumenta o espaço abaixo
           backgroundColor: themas.Colors.bgSecondary,
           elevation: 0, // Remove sombra no Android
           shadowOpacity: 0, // Remove sombra no iOS
           borderTopWidth: 0, // Remove borda superior
-          height: 80, // Aumenta a altura da barra para garantir que ela tenha mais espaço
+          height: 70 + insets.bottom, // Aumenta a altura da barra para garantir que ela tenha mais espaço
         },
         headerShown: false,
         headerTintColor: themas.Colors.secondary,
@@ -49,8 +53,15 @@ export default function AppRouter() {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Metas" component={Metas} />
-      <Tab.Screen name="Matérias" component={Materias} />
+      <Tab.Screen 
+        name="Metas" 
+        component={() => ( // Envolvendo `Metas` com `MetasModal`
+          <MetasModal>
+            <Metas />
+          </MetasModal>
+        )}
+      />
+      <Tab.Screen name="Atividades" component={Atividades} />
       <Tab.Screen name="Preferências" component={Mais} />
     </Tab.Navigator>
   );

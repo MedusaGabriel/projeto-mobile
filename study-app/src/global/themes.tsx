@@ -6,7 +6,8 @@ export const themas = {
         gray:'gray',
         bgScreen:'#292929',
         bgSecondary:'#1a1a1a',
-        blueLigth:'#1b8eff'
+        blueLigth:'#1b8eff',
+        red: '#ff0000',
     },
     Fonts: {
         regular: 'Montserrat_400Regular',

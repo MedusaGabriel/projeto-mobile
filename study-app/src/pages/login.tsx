@@ -47,7 +47,7 @@ export default function Login() {
         
         <View style={styles.container}>
             <View style={styles.boxTop}>
-            <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
+            <Image source={Logo} style={styles.logo} resizeMode="contain" />
             <Text style={styles.title}>Fazer login</Text>
             </View>
             <View style={styles.boxCenter}>

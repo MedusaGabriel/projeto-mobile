@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-
 import { StyleSheet } from 'react-native';
 import { themas } from '../global/themes';
 
-const Materias = () => {
+const Atividades = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [subjectName, setSubjectName] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState<string | undefined>(undefined);
@@ -307,4 +307,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Materias;
+export default Atividades;
