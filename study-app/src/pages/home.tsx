@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { firestore, auth } from '../services/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { themas } from '../global/themes';
 
@@ -10,26 +10,23 @@ function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-  // Lista fixa dos dias da semana
-  const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const flatListRef = useRef<FlatList>(null); // Referência para o FlatList
 
-  // Dia atual
   const today = new Date();
   const currentDay = today.getDate();
-  const currentWeekday = today.getDay();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
 
-  // Função para calcular as datas dos dias da semana (passados e futuros)
-  const getDayDates = () => {
-    const dates = [];
-    for (let i = -currentWeekday; i <= 6 - currentWeekday; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      dates.push(date.getDate());
-    }
-    return dates;
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month + 1, 0).getDate();
   };
 
-  const weekDates = getDayDates();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) => ({
+    day: i + 1,
+    weekDay: new Date(currentYear, currentMonth, i + 1).getDay(),
+  }));
 
   const fetchUserName = async (uid: string) => {
     try {
@@ -58,23 +55,28 @@ function Home() {
       }
     });
 
+    setSelectedDay(currentDay);
+
+    if (currentDay !== 1) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({ index: currentDay - 1, animated: true });
+      }, 100);
+    }
+
     return () => unsubscribe();
   }, []);
 
-  // Função para definir o dia selecionado
-  const handleDaySelect = (index: number) => {
-    setSelectedDay(index);
+  const handleDaySelect = (day: number) => {
+    setSelectedDay(day);
   };
 
-  // Função para formatar o nome do dia por extenso
-  const formatDayName = (index: number) => {
-    const fullDaysOfWeek = ['Domingo', 'Segunda-feira,', 'Terça-feira,', 'Quarta-feira,', 'Quinta-feira,', 'Sexta-feira,', 'Sábado,'];
-    return fullDaysOfWeek[index];
+  const formatDayName = (dayIndex: number) => {
+    const fullDaysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    return fullDaysOfWeek[dayIndex];
   };
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
-      {/* Header */}
       {loading ? (
         <Text style={styles.text}>Olá, Carregando...</Text>
       ) : (
@@ -82,34 +84,44 @@ function Home() {
       )}
       <Text style={styles.textsecondary}>Tenha um ótimo dia!!</Text>
 
-      {/* Calendário Horizontal */}
       <View style={styles.calendarContainer}>
         <FlatList
-          data={daysOfWeek}
+          ref={flatListRef}
+          data={monthDays}
           horizontal
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
+          keyExtractor={(item) => item.day.toString()}
+          getItemLayout={(data, index) => ({
+            length: 60,
+            offset: 60 * index,
+            index,
+          })}
+          onScrollToIndexFailed={(error) => {
+            console.warn('Erro ao rolar para o índice:', error);
+            flatListRef.current?.scrollToOffset({
+              offset: error.averageItemLength * error.index,
+              animated: true,
+            });
+          }}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              style={[styles.dayItem, selectedDay === index && styles.selectedDay]} // Destaca o dia selecionado
-              onPress={() => handleDaySelect(index)} // Ao clicar, seleciona o dia
+              style={[
+                styles.dayItem,
+                selectedDay === item.day && styles.selectedDay,
+                currentDay === item.day && styles.todayHighlight,
+              ]}
+              onPress={() => handleDaySelect(item.day)}
             >
-              {/* Nome do dia da semana (abreviado) */}
               <Text
                 style={[
                   styles.dayText,
-                  selectedDay === index && styles.selectedDayText, // Destaque para o dia selecionado
+                  selectedDay === item.day && styles.selectedDay,
+                  currentDay === item.day && styles.todayText,
                 ]}
               >
-                {item}
+                {item.day}
               </Text>
-              {/* Número do dia */}
-              <Text
-                style={[
-                  styles.dateText,
-                  selectedDay === index && styles.selectedDateText, // Destaca a data do dia selecionado
-                ]}
-              >
-                {weekDates[index]} {/* Exibe a data */}
+              <Text style={styles.weekDayText}>
+                {formatDayName(item.weekDay)} {/* Exibe o nome do dia da semana */}
               </Text>
             </TouchableOpacity>
           )}
@@ -117,21 +129,7 @@ function Home() {
         />
       </View>
 
-      {/* Exibição do "O que temos para hoje?" abaixo do calendário */}
-      <View style={styles.todayContainer}>
-        {selectedDay === currentWeekday ? (
-          <Text style={styles.todayText}>O que temos para hoje?</Text>
-        ) : null}
-      </View>
-
-      {/* Exibição do dia selecionado abaixo do calendário */}
-      <View style={styles.selectedDayContainer}>
-        <Text style={styles.selectedDayText}>
-          {selectedDay === null
-            ? 'Selecione um dia'
-            : `${formatDayName(selectedDay)} ${weekDates[selectedDay]}`}
-        </Text>
-      </View>
+      {/* Removi a parte que exibia "Dia 27" abaixo do calendário */}
     </View>
   );
 }
@@ -156,50 +154,39 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   calendarContainer: {
-    height: 70,
-    marginVertical: 10,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    marginVertical: 5,
   },
   dayItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 50,
+    width: 60,
+    height: 60,
+    marginHorizontal: 2,
+    marginVertical: 2,
   },
   dayText: {
     fontSize: 14,
     color: themas.Colors.primary,
     fontFamily: themas.Fonts.regular,
   },
-  dateText: {
-    fontSize: 12,
+  weekDayText: {
+    fontSize: 10,
     color: themas.Colors.lightGray,
     fontFamily: themas.Fonts.regular,
   },
   selectedDay: {
-    backgroundColor: themas.Colors.blueLigth, // Destaca o fundo do dia selecionado
+    backgroundColor: themas.Colors.blueLigth,
     borderRadius: 5,
   },
-  selectedDateText: {
-    color: themas.Colors.bgSecondary,
-    fontWeight: 'bold',
-  },
-  todayContainer: {
-    marginTop: 10,
-    alignItems: 'center',
+  todayHighlight: {
+    borderColor: themas.Colors.blueLigth,
+    borderWidth: 2,
+    borderRadius: 5,
   },
   todayText: {
-    fontSize: 18,
-    color: themas.Colors.blueLigth,
     fontWeight: 'bold',
-  },
-  selectedDayContainer: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  selectedDayText: {
     color: themas.Colors.primary,
-    fontWeight: 'bold',
-    fontSize: 18,
   },
 });
 
