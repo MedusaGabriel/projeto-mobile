@@ -4,6 +4,7 @@ import { themas } from '../global/themes';
 import { AntDesign } from '@expo/vector-icons';
 import { useGoal } from '../components/Modal/metasmodal';
 import MetasList from '../components/Listas/metaslist';
+import { LinearGradient } from 'expo-linear-gradient';
 export default function Metas() {
   
   const { onOpen } = useGoal();
@@ -22,7 +23,6 @@ export default function Metas() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: 20,
     paddingBottom: 0,
     backgroundColor: themas.Colors.bgScreen,
     alignItems: 'center',
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     fontSize: 20, 
     color: themas.Colors.primary, 
     fontFamily: themas.Fonts.bold,
+    marginBottom: 10,
   },
   button: {
     position: "absolute",

@@ -190,8 +190,6 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           <View style={styles.inputContainer}>
             <Input
               title="Descrição:"
-              numberOfLines={1}
-              textAlignVertical="top"
               labelStyle={styles.label}
               value={descricao}
               maxLength={30}

@@ -20,7 +20,6 @@ const Mais = () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        console.log('Buscando dados do usuário...');
         const userDoc = doc(firestore, 'users', user.uid);
         const docSnap = await getDoc(userDoc);
         if (docSnap.exists()) {
@@ -33,7 +32,6 @@ const Mais = () => {
       console.error('Erro ao buscar dados do usuário:', error);
     } finally {
       setLoading(false); // Define o estado de carregamento como falso após a execução
-      console.log('Dados carregados.');
     }
   };
 
