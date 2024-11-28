@@ -9,6 +9,7 @@ export const themas = {
         blueLigth:'#1b8eff',
         red: '#ff0000',
         green: '#4caf50',
+        greenlight: '#0b933b',
     },
     Fonts: {
         regular: 'Montserrat_400Regular',

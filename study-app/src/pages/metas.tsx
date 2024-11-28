@@ -22,7 +22,8 @@ export default function Metas() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: 20, 
+    padding: 20,
+    paddingBottom: 0,
     backgroundColor: themas.Colors.bgScreen,
     alignItems: 'center',
   },

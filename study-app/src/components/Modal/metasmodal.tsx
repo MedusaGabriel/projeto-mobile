@@ -16,12 +16,18 @@ interface GoalContextProps {
   onOpen: () => void;
   goalsList: any[];
   setGoalsList: React.Dispatch<React.SetStateAction<Goal[]>>,
+  setTitulo: React.Dispatch<React.SetStateAction<string>>,
+  setDescricao: React.Dispatch<React.SetStateAction<string>>,
+  setDataConclusao: React.Dispatch<React.SetStateAction<Date>>,
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>,
+  setEditGoalId: React.Dispatch<React.SetStateAction<string | null>>,
+  handleEdit: (goal: Goal) => void,
 }
 
 export const GoalContext = createContext<GoalContextProps>({} as GoalContextProps);
 
 interface Goal {
-  id: number;
+  id: string;
   titulo: string;
   descricao: string;
   dataConclusao: string;
@@ -30,68 +36,68 @@ interface Goal {
 
 export const MetasModal = ({ children }: { children: ReactNode }) => {
   const modalizeRef = useRef<Modalize>(null);
-  const [titulo, setTitulo] = useState(''); // Renomeado de title para titulo
-  const [descricao, setDescricao] = useState(''); // Renomeado de description para descricao
-  const [dataConclusao, setDataConclusao] = useState(new Date()); // Renomeado de expectedDate para dataConclusao
+  const [titulo, setTitulo] = useState('');
+  const [descricao, setDescricao] = useState('');
+  const [dataConclusao, setDataConclusao] = useState(new Date());
+  const [isEdit, setIsEdit] = useState(false);
+  const [editGoalId, setEditGoalId] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [goalsList, setGoalsList] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(false);
+  const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });
 
   const onOpen = () => modalizeRef.current?.open();
   const onClose = () => {
     modalizeRef.current?.close();
     resetForm();
+    fetchMetas();
   };
 
-  // Função para editar a tarefa
-  const handleEdit = (goal: any) => {
-    setTitulo(goal.titulo);
-    setDescricao(goal.descricao);
-    setDataConclusao(new Date(goal.dataConclusao)); 
-    onOpen();
-  };
-
-  // Função para excluir a tarefa
-  const handleDelete = async (goalId: string) => {
+  const fetchMetas = async () => {
     try {
-      setLoading(true);
       const user = auth.currentUser;
-
       if (!user) {
         Alert.alert("Erro", "Usuário não autenticado.");
         return;
       }
-
-      // Referência à coleção "users" -> UID do usuário -> coleção "metas" -> meta específica
-      const goalDocRef = doc(db, "users", user.uid, "metas", goalId);
-
-      // Remove a meta do Firestore
-      await deleteDoc(goalDocRef);
-
-      // Atualiza a lista local de metas, removendo a meta deletada
-      setGoalsList(goalsList.filter(goal => goal.id.toString() !== goalId));
-
-      Alert.alert("Sucesso", "Meta excluída com sucesso!");
+      const metasRef = collection(db, "users", user.uid, "metas");
+      const querySnapshot = await getDocs(metasRef);
+      const metasList: Goal[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        metasList.push({
+          id: doc.id,
+          titulo: data.titulo,
+          descricao: data.descricao,
+          dataConclusao: data.dataConclusao,
+          concluido: data.concluido || false,
+        });
+      });
+      setGoalsList(metasList);
     } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao excluir a meta. Tente novamente.");
-      console.error("Erro ao excluir meta no Firebase:", error);
-    } finally {
-      setLoading(false);
+      console.error("Erro ao buscar metas:", error);
     }
   };
 
-  // Função para salvar a meta no Firestore
   const handleSave = async () => {
     if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
       Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
       return;
     }
   
+    // Ajuste a data para meio-dia (12:00:00) para evitar problemas de fuso horário
+    const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
+  
+    // Atualizar somente se a data realmente mudar
+    if (adjustedDate !== dataConclusao) {
+      setDataConclusao(adjustedDate);
+    }
+  
     const newGoal = {
       titulo,
       descricao,
-      dataConclusao: format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR }),
+      dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
       concluido: false,
     };
   
@@ -103,24 +109,60 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
         Alert.alert("Erro", "Usuário não autenticado.");
         return;
       }
+  
+      const metasRef = collection(db, "users", user.uid, "metas");
+  
+      if (isEdit && editGoalId) {
+        const goalDocRef = doc(db, "users", user.uid, "metas", editGoalId);
+        await updateDoc(goalDocRef, newGoal);
+        Alert.alert("Sucesso!", "Meta atualizada com sucesso!");
+      } else {
+        const goalDocRef = await addDoc(metasRef, newGoal);
+        const newGoalWithId = { id: goalDocRef.id, ...newGoal };
+        setGoalsList([...goalsList, newGoalWithId]);
+        Alert.alert("Sucesso!", "Meta salva com sucesso!");
+      }
+  
       onClose();
       resetForm();
-
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao salvar a meta. Tente novamente.");
       console.error("Erro ao salvar meta no Firebase:", error);
     } finally {
       setLoading(false);
     }
+  };  
+  
+  const handleEdit = (goal: Goal) => {
+    setTitulo(goal.titulo);
+    setDescricao(goal.descricao);
+  
+    // Se a data for string no formato 'dd/MM/yyyy', convertemos para um objeto Date
+    let date: Date;
+  
+    if (goal.dataConclusao.includes('/')) {
+      const [day, month, year] = goal.dataConclusao.split('/');
+      date = new Date(`${year}-${month}-${day}T12:00:00`); // ISO format com hora ajustada para meio-dia
+    } else {
+      date = new Date(goal.dataConclusao);
+      date.setHours(12, 0, 0, 0); // Ajuste para meio-dia (12:00) para evitar problemas de fuso horário
+    }
+
+    // Atualiza o estado com a nova data
+    setDataConclusao(date);
+  
+    setIsEdit(true);
+    setEditGoalId(goal.id);
+    onOpen();
   };
 
   const resetForm = () => {
     setTitulo('');
     setDescricao('');
     setDataConclusao(new Date());
+    setIsEdit(false);
+    setEditGoalId(null);
   };
-
-  const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });  // Formata a data para o padrão dia/mês/ano
 
   const _container = () => (
     <KeyboardAvoidingView
@@ -133,7 +175,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           <TouchableOpacity onPress={onClose}>
             <MaterialIcons name="close" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
-          <Text style={styles.title}>Crie uma nova Meta</Text>
+          <Text style={styles.title}>{isEdit ? "Edite sua Meta" : "Crie uma nova Meta"}</Text>
           <TouchableOpacity onPress={handleSave}>
             <AntDesign name="check" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
@@ -142,8 +184,8 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           <Input
             title="Título da Meta:"
             labelStyle={styles.label}
-            value={titulo} // Usando o nome traduzido
-            onChangeText={setTitulo} // Usando o nome traduzido
+            value={titulo}
+            onChangeText={setTitulo}
           />
           <View style={styles.inputContainer}>
             <Input
@@ -151,9 +193,9 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
               numberOfLines={1}
               textAlignVertical="top"
               labelStyle={styles.label}
-              value={descricao} // Usando o nome traduzido
-              maxLength={30} // Define o limite máximo de caracteres
-              onChangeText={setDescricao} // Usando o nome traduzido
+              value={descricao}
+              maxLength={30}
+              onChangeText={setDescricao}
             />
             <Text style={styles.charCounter}>{30 - descricao.length} caracteres restantes</Text>
           </View>
@@ -161,13 +203,13 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
             <View style={styles.dateLabelContainer}>
               <Text style={styles.labeldate}>Data prevista para conclusão:</Text>
             </View>
-
+  
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
               style={styles.dateInputContainer}
             >
               <Input
-              style={styles.dateInputContainer}
+                style={styles.dateInputContainer}
                 onPress={() => setShowDatePicker(true)}
                 boxStyle={{
                   marginTop: -4,
@@ -182,19 +224,22 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
                   width: '100%',
                 }}
                 editable={false}
-                value={formattedDate} // Exibe a data formatada
+                value={formattedDate}
               />
             </TouchableOpacity>
-
-            {/* Date Picker */}
+  
             {showDatePicker && (
               <View style={styles.datePickerWrapper}>
                 <CustomDateTimePicker
                   type="date"
-                  onDateChange={setDataConclusao}
+                  onDateChange={(date) => {
+                    // Ajustar a data para meio-dia (12:00) para evitar problemas de fuso horário
+                    date.setHours(12, 0, 0, 0);
+                    setDataConclusao(date);
+                  }}
                   show={showDatePicker}
                   setShow={setShowDatePicker}
-                  selectedDate={dataConclusao}
+                  selectedDate={dataConclusao}  // Passando dataConclusao corretamente
                 />
               </View>
             )}
@@ -205,7 +250,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <GoalContext.Provider value={{ onOpen, goalsList, setGoalsList }}>
+    <GoalContext.Provider value={{ onOpen, goalsList, setGoalsList, setTitulo, setDescricao, setDataConclusao, setIsEdit, setEditGoalId, handleEdit }}>
       {loading && (
         <Modal
           transparent
@@ -226,11 +271,12 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
         ref={modalizeRef}
         adjustToContentHeight
         modalStyle={{
-          borderTopLeftRadius: 30,  // Arredondamento superior esquerdo
-          borderTopRightRadius: 30, // Arredondamento superior direito
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
           backgroundColor: themas.Colors.bgSecondary,
           zIndex: 1
         }}
+        onOverlayPress={resetForm}
         >
         {_container()}
       </Modalize>
@@ -276,18 +322,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start', 
     alignSelf: 'flex-end'
   },
-  dateContainer: { //CONTAINNER GERAL COM TUDO
+  dateContainer: {
     marginTop: 20,
     marginBottom: 20,
-    flexDirection: 'row', // Alinha os itens horizontalmente
-    alignItems: 'center', // Centraliza verticalmente os itens
-    justifyContent: 'space-between', // Ajusta os espaços entre os itens
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderColor: 'white',
   },
-  dateLabelContainer: { // RESPONSAVEL PELA BOX DO TEXTO
-    width: '50%', // Atribui 50% de largura para o texto
+  dateLabelContainer: {
+    width: '50%',
   },
-  labeldate: { //TEXTO
+  labeldate: {
     fontFamily: themas.Fonts.medium,
     color: themas.Colors.secondary,
   },
@@ -298,11 +344,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,  // Adicione esta linha para garantir que o conteúdo ocupe toda a altura disponível
-    justifyContent: 'center',  // Centraliza verticalmente
-    alignItems: 'center',  // Centraliza horizontalmente
-    width: '100%',  // Garante que o conteúdo ocupe toda a largura disponível
-    zIndex: 10,  // Certifique-se de que o conteúdo fique acima de outros elementos (opcional)
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 10,
   },
   charCounter: {
     marginTop: 5,
@@ -312,24 +358,24 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   loadingContainer: {
-    position: 'absolute',  // Para ocupar a tela inteira
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',  // Cor de fundo semi-transparente
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, // Certifica que o loading ficará acima de tudo
+    zIndex: 1000,
   },
   loadingBox: {
-    width: 150,  // Largura do box (ajuste conforme necessário)
-    height: 150, // Altura do box (ajuste conforme necessário)
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Cor de fundo escura para destaque
-    borderRadius: 15, // Cantos arredondados
+    width: 150,
+    height: 150,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5, // Sombra para um efeito 3D (se necessário)
+    elevation: 5,
   },
   loadingText: {
     color: 'white',

@@ -1,22 +1,51 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { signOut } from 'firebase/auth';
-import { auth } from '../services/firebaseConfig'; // Sua configuração do Firebase
-import { useNavigation,NavigationProp  } from '@react-navigation/native'; // Hook de navegação
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Biblioteca de ícones
+import { auth, firestore } from '../services/firebaseConfig';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { themas } from '../global/themes';
+import { doc, getDoc } from 'firebase/firestore';
+import MetasGraficos from '../components/Graficos/metasgraficos';
+import { format, parse } from 'date-fns'; // Importando o format da date-fns
 
 const Mais = () => {
   const navigation = useNavigation<NavigationProp<any>>();
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Função de logout
+  // Função para buscar apenas os dados do usuário
+  const fetchUserData = async () => {
+    setLoading(false);  // Marca o carregamento como ativo
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        console.log('Buscando dados do usuário...');
+        const userDoc = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          setUserData(docSnap.data()); // Atualiza os dados do usuário
+        } else {
+          console.log('Usuário não encontrado no banco de dados');
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
+    } finally {
+      setLoading(false); // Define o estado de carregamento como falso após a execução
+      console.log('Dados carregados.');
+    }
+  };
+
+  // Chama a função para buscar dados do usuário apenas uma vez ao montar o componente
+  useEffect(() => {
+    fetchUserData();
+  }, []);  // O array vazio significa que isso será executado apenas uma vez após o primeiro render
+
   const handleLogout = async () => {
     try {
-      // Fazendo logout do Firebase
       await signOut(auth);
       console.log('Logout realizado com sucesso');
-
-      // Redirecionando para a tela de login
       navigation.navigate('Login');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -25,16 +54,35 @@ const Mais = () => {
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
-      <View style={styles.content}>
-        <Text style={styles.text}>Fazer Logout</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.button}>
-          <MaterialCommunityIcons 
-            name="exit-to-app" 
-            size={30}
-            color= {themas.Colors.primary} 
-          />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.card}>
+        <Text style={styles.headerText}>Dados do Usuário</Text>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={themas.Colors.primary} />
+            <Text style={styles.loadingText}>Carregando...</Text>
+          </View>
+        ) : userData ? (
+          <View>
+            <Text style={styles.text}>Nome: {userData?.username}</Text>
+            <Text style={styles.text}>Email: {userData?.email}</Text>
+            <Text style={styles.text}>Curso: {userData?.curso}</Text>
+            <Text style={styles.text}>Data de Criação: {userData?.criação}</Text>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.text}>Usuário não encontrado</Text>
+          </View>
+        )}
+      </View>  
+      <MetasGraficos />
+      <TouchableOpacity onPress={handleLogout} style={styles.button}>
+        <MaterialCommunityIcons 
+          name="exit-to-app"
+          size={30} 
+          color={themas.Colors.blueLigth} 
+        />
+        <Text style={styles.buttonText}>Sair</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -43,28 +91,63 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: themas.Colors.bgScreen,
     flex: 1,
-    justifyContent: 'flex-start',  // Alinha o conteúdo no final (parte inferior)
-    alignItems: 'flex-end',  // Alinha o conteúdo à direita
-    padding: 20,  // Adiciona um pouco de espaço nas bordas
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  content: {
-    flexDirection: 'row',  // Organiza o texto e o ícone lado a lado
-    alignItems: 'center',  // Alinha o texto e o ícone verticalmente
+  card: {
+    backgroundColor: themas.Colors.bgSecondary,
+    borderRadius: 15,
+    height: '26%',
+    padding: 20,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
+    fontFamily: themas.Fonts.bold,
+    color: themas.Colors.primary,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   text: {
-    marginRight: 1,// Adiciona espaço entre o texto e o ícone
     fontSize: 16,
-    color: themas.Colors.primary, 
-    fontFamily: themas.Fonts.bold
+    color: themas.Colors.primary,
+    fontFamily: themas.Fonts.regular,
+    marginBottom: 8,
   },
   button: {
-    padding: 5,  // Reduzindo o padding para diminuir o tamanho do botão
-    backgroundColor: themas.Colors.bgScreen,  // Exemplo de cor de fundo, pode ser ajustada
-    borderRadius: 25,  // Torna o botão arredondad
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: themas.Colors.bgSecondary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontFamily: themas.Fonts.bold,
+    color: 'white',
+    marginLeft: 10,
+  },
+  loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 15,
+  },
+  loadingText: {
+    fontSize: 18,
+    marginTop: 10,
+    color: themas.Colors.primary,
+    fontFamily: themas.Fonts.regular,
   },
 });
-
 
 export default Mais;
