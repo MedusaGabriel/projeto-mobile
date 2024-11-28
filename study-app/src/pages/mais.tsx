@@ -4,6 +4,7 @@ import { signOut } from 'firebase/auth';
 import { auth, firestore } from '../services/firebaseConfig';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Button } from '../components/Button';
 import { themas } from '../global/themes';
 import { doc, getDoc } from 'firebase/firestore';
 import MetasGraficos from '../components/Graficos/metasgraficos';
@@ -53,8 +54,8 @@ const Mais = () => {
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
+      <Text style={styles.headerText}>Dados Pessoais</Text>
       <View style={styles.card}>
-        <Text style={styles.headerText}>Dados do Usuário</Text>
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={themas.Colors.primary} />
@@ -73,12 +74,13 @@ const Mais = () => {
           </View>
         )}
       </View>  
+      <Text style={styles.headerText}>Seu Progresso</Text>
       <MetasGraficos />
       <TouchableOpacity onPress={handleLogout} style={styles.button}>
         <MaterialCommunityIcons 
-          name="exit-to-app"
+          name="exit-to-app" 
           size={30} 
-          color={themas.Colors.blueLigth} 
+          color={themas.Colors.primary} 
         />
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
@@ -96,35 +98,43 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
-    height: 'auto',
-    padding: 20,
+    height: 120, // Isso permite que o card tenha uma altura flexível
+    justifyContent: 'center',
+    alignContent: 'center',
     width: '100%',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 10,
+    padding: 20,
   },
   headerText: {
-    fontSize: 24,
-    fontFamily: themas.Fonts.bold,
+    textAlign: 'left',
+    width: '100%',
+    fontSize: 18,
+    fontFamily: themas.Fonts.medium,
     color: themas.Colors.primary,
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 10,
   },
   text: {
     fontSize: 16,
     color: themas.Colors.primary,
-    fontFamily: themas.Fonts.regular,
-    marginBottom: 8,
+    fontFamily: themas.Fonts.light,
+    marginBottom: 2,
   },
   button: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    marginTop: 10,
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: themas.Colors.bgSecondary,
+    backgroundColor: themas.Colors.blueLigth,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 25,
+    borderRadius: 15,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -133,13 +143,19 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontFamily: themas.Fonts.bold,
-    color: 'white',
+    color: themas.Colors.primary,
     marginLeft: 10,
   },
   loadingContainer: {
-    justifyContent: 'center',
+    backgroundColor: themas.Colors.bgSecondary,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    height: "auto",
+    width: '100%',
     alignItems: 'center',
-    marginTop: 15,
   },
   loadingText: {
     fontSize: 18,

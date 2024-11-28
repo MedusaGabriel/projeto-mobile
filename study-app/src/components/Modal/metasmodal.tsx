@@ -7,7 +7,7 @@ import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns'; 
 import { ptBR } from 'date-fns/locale';
-import { serverTimestamp, addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { serverTimestamp, addDoc, collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from "../../services/firebaseConfig";
 
 const FieldValue = { serverTimestamp };

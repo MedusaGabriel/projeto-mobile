@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Dimensions, TouchableOpacity, Alert, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from "react-native";
-import Logo from '../assets/logo.png';
+import { StyleSheet, TouchableOpacity, Alert, View, Text, Image, KeyboardAvoidingView, Platform } from "react-native";
+import Loginicon from '../assets/login.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
-import { Text, View, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { auth } from "../services/firebaseConfig";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { themas } from '../global/themes'; 
+import { themas } from '../global/themes';
 
 export default function Login() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -45,93 +44,115 @@ export default function Login() {
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <View style={styles.container}>
-                    <View style={styles.boxTop}>
-                        <Image source={Logo} style={styles.logo} resizeMode="contain" />
-                        <Text style={styles.title}>Fazer login</Text>
-                    </View>
-                    <View style={styles.boxCenter}>
-                        <Input
-                            placeholder="Email"
-                            height={55}
-                            IconRight={MaterialIcons}
-                            iconRightName="email"
-                            placeholderTextColor={themas.Colors.secondary}
-                            value={email}
-                            onChangeText={setEmail}
-                        />
-                        <Input
-                            placeholder="Senha"
-                            placeholderTextColor={themas.Colors.secondary}
-                            value={password}
-                            height={55}
-                            IconRight={Octicons}
-                            onChangeText={setPassword}
-                            iconRightName={showPassword ? "eye-closed" : "eye"}
-                            onIconRightPress={() => setShowPassword(!showPassword)}
-                            secureTextEntry={showPassword}
-                            style={{ backgroundColor: themas.Colors.bgScreen }}
-                        />
-                    </View>
-                    <View style={styles.boxBottom}>
-                        <Button text="Entrar" loading={loading} onPress={() => getLogin()} />
-                    </View>
-                    <Text style={styles.textBottom}>
-                        Não tem conta?
-                        <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-                            <Text style={styles.textBottomCreate}> Crie agora</Text>
-                        </TouchableOpacity>
-                    </Text>
+            <View style={styles.container}>
+                <View style={styles.boxTop}>
+                    <Image source={Loginicon} style={styles.logo} resizeMode="contain" />
                 </View>
-            </TouchableWithoutFeedback>
+                <View style={styles.boxCenter}>
+                    <View style={styles.tittlelogin}>
+                        <Text style={styles.title}>Bem-vindo,</Text>
+                        <Text style={styles.title}>Pronto para a jornada?</Text>
+                    </View>
+                    <Input
+                        boxStyle={{
+                            marginTop: -4,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        placeholder="Email"
+                        height={55}
+                        IconRight={MaterialIcons}
+                        iconRightName="email"
+                        placeholderTextColor={themas.Colors.secondary}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    <Input
+                        boxStyle={{
+                            marginTop: 10,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginBottom: 10,
+                        }}
+                        placeholder="Senha"
+                        placeholderTextColor={themas.Colors.secondary}
+                        value={password}
+                        height={55}
+                        IconRight={Octicons}
+                        onChangeText={setPassword}
+                        iconRightName={showPassword ? "eye-closed" : "eye"}
+                        onIconRightPress={() => setShowPassword(!showPassword)}
+                        secureTextEntry={showPassword}
+                        style={{ backgroundColor: themas.Colors.bgScreen }}
+                    />
+                </View>
+                <View style={styles.boxBottom}>
+                    <Button
+                        text="Entrar"
+                        loading={loading}
+                        onPress={() => getLogin()}
+                        textStyle={{ fontSize: 18, fontFamily: themas.Fonts.medium }}
+                        backgroundColor={{ backgroundColor: themas.Colors.blueLigth }}
+                        width="100%"
+                    />
+                </View>
+                <Text style={styles.textBottom}>
+                    Não tem conta?
+                    <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+                        <Text style={styles.textBottomCreate}> Crie agora</Text>
+                    </TouchableOpacity>
+                </Text>
+            </View>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: themas.Colors.bgSecondary,
     },
-    boxCenter: {
-        flex: 0.5,
-        width: '90%',
-        justifyContent: 'center',
-        marginBottom: 50,
-    },
     boxTop: {
-        width: '100%',
+        marginTop: 90,
+        width: '85%',
+        height: "auto",
         alignItems: 'center',
+        marginBottom: 25,
+    },
+    boxCenter: {
+        width: '85%',
         justifyContent: 'center',
-        marginBottom: 0,
     },
     boxBottom: {
-        width: '100%',
+        width: '85%',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingBottom: 20,
+        paddingTop: 20,
     },
     logo: {
-        width: 180,
-        height: 180,
-        marginTop: 0,
-        marginBottom: 75,
+        width: 300,
+        height: 250,
+    },
+    tittlelogin: {
+        marginBottom: 30,
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
     },
     title: {
+        textAlign: 'left',
         fontSize: 24,
-        color: '#fff',
+        color: themas.Colors.primary,
+        fontFamily: themas.Fonts.extraBold,
         fontWeight: 'bold',
-        marginBottom: -40,
     },
     textBottom: {
-        position: "absolute",
-        bottom: 50,
+        position: 'absolute',
+        bottom: 40,
         fontSize: 16,
         color: themas.Colors.secondary,
         fontFamily: themas.Fonts.regular,
