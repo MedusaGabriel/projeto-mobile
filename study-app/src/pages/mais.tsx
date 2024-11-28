@@ -7,7 +7,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { themas } from '../global/themes';
 import { doc, getDoc } from 'firebase/firestore';
 import MetasGraficos from '../components/Graficos/metasgraficos';
-import { format, parse } from 'date-fns'; // Importando o format da date-fns
 
 const Mais = () => {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -16,7 +15,7 @@ const Mais = () => {
 
   // Função para buscar apenas os dados do usuário
   const fetchUserData = async () => {
-    setLoading(false);  // Marca o carregamento como ativo
+    setLoading(true);  // Marca o carregamento como ativo
     try {
       const user = auth.currentUser;
       if (user) {
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
-    height: '26%',
+    height: 'auto',
     padding: 20,
     width: '100%',
     shadowColor: '#000',
