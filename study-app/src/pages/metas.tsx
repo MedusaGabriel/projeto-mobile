@@ -4,9 +4,8 @@ import { themas } from '../global/themes';
 import { AntDesign } from '@expo/vector-icons';
 import { useGoal } from '../components/Modal/metasmodal';
 import MetasList from '../components/Listas/metaslist';
-import { LinearGradient } from 'expo-linear-gradient';
+
 export default function Metas() {
-  
   const { onOpen } = useGoal();
 
   return (

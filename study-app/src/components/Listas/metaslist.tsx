@@ -73,46 +73,47 @@ const MetasList: React.FC = () => {
   }, [userId, setGoalsList]);
   
   const toggleConcluido = async (id: string) => {
-  if (!userId) return;
-
-  // Referência à meta no Firestore
-  const metaRef = doc(db, "users", userId, "metas", id);
-  const meta = goalsList.find((meta) => meta.id === id);
-
-  if (!meta) {
-    console.error("Meta não encontrada!");
-    return;
-  }
-
-  const newConcluidoStatus = !meta.concluido; // Inverte o estado de conclusão
-  const dataConclusaoReal = newConcluidoStatus ? new Date().toISOString() : null; // Define a data de conclusão real, se necessário
-
-  try {
-    // Atualiza o Firestore
-    await updateDoc(metaRef, {
-      concluido: newConcluidoStatus,
-      dataConclusaoReal: dataConclusaoReal,
-    });
-
-    // Atualiza o estado local
-    setGoalsList((prevMetas) => {
-      const updatedMetas = prevMetas.map((meta) =>
-        meta.id === id
-          ? { ...meta, concluido: newConcluidoStatus, dataConclusaoReal }
-          : meta
-      );
-
-      // Reordena metas: concluídas no final e mais recentes no topo
-      return updatedMetas.sort((a, b) => {
-        if (a.concluido && !b.concluido) return 1;
-        if (!a.concluido && b.concluido) return -1;
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (!userId) return;
+  
+    // Referência à meta no Firestore
+    const metaRef = doc(db, "users", userId, "metas", id);
+    const meta = goalsList.find((meta) => meta.id === id);
+  
+    if (!meta) {
+      console.error("Meta não encontrada!");
+      return;
+    }
+  
+    const newConcluidoStatus = !meta.concluido; // Inverte o estado de conclusão
+    const dataConclusaoReal = newConcluidoStatus ? new Date().toISOString() : null; // Define a data de conclusão real, se necessário
+  
+    try {
+      // Atualiza o Firestore
+      await updateDoc(metaRef, {
+        concluido: newConcluidoStatus,
+        dataConclusaoReal: dataConclusaoReal,
       });
-    });
-  } catch (error) {
-    console.error("Erro ao atualizar meta:", error);
-  }
-};
+  
+      // Atualiza o estado local
+      setGoalsList((prevMetas) => {
+        const updatedMetas = prevMetas.map((meta) =>
+          meta.id === id
+            ? { ...meta, concluido: newConcluidoStatus, dataConclusaoReal }
+            : meta
+        );
+  
+        // Reordena metas: concluídas no final e mais recentes no topo
+        const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
+        const concludedGoals = updatedMetas.filter(meta => meta.concluido);
+  
+        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
+        return [...nonConcludedGoals, ...concludedGoals];
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar meta:", error);
+    }
+  };
   
   const handleDelete = async (meta: Meta) => {
     try {
@@ -125,11 +126,14 @@ const MetasList: React.FC = () => {
         const updatedMetas = prevMetas.filter((item) => item.id !== meta.id);
   
         // Separa as metas concluídas das não concluídas
-        const completedMetas = updatedMetas.filter((meta) => meta.concluido);
-        const pendingMetas = updatedMetas.filter((meta) => !meta.concluido);
+        const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
+        const concludedGoals = updatedMetas.filter(meta => meta.concluido);
+  
+        // Ordena as metas não concluídas por data de criação
+        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   
         // Combina as metas não concluídas com as concluídas (as concluídas sempre no final)
-        return [...pendingMetas, ...completedMetas];
+        return [...nonConcludedGoals, ...concludedGoals];
       });
     } catch (error) {
       console.error("Erro ao excluir meta:", error);
@@ -173,11 +177,12 @@ const MetasList: React.FC = () => {
       );
   
       // Ordena a lista garantindo que concluídas fiquem no final
-      return updatedMetas.sort((a, b) => {
-        if (a.concluido && !b.concluido) return 1;
-        if (!a.concluido && b.concluido) return -1;
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      });
+      const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
+      const concludedGoals = updatedMetas.filter(meta => meta.concluido);
+  
+      nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
+      return [...nonConcludedGoals, ...concludedGoals];
     });
   };
 

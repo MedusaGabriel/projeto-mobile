@@ -8,6 +8,7 @@ import Mais from '../pages/mais';
 import { themas } from '../global/themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MetasModal from '../components/Modal/metasmodal';
+import { AtividadesModal } from '../components/Modal/atividadesmodal';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,7 +64,16 @@ export default function AppRouter() {
           </MetasModal>
         )}
       </Tab.Screen>
-      <Tab.Screen name="Atividades" component={Atividades} />
+      <Tab.Screen 
+        name="Atividades" 
+        options={{ headerShown: false }}
+      >
+        {() => (
+          <AtividadesModal>
+            <Atividades />
+          </AtividadesModal>
+        )}
+      </Tab.Screen>
       <Tab.Screen name="Preferências" component={Mais} />
     </Tab.Navigator>
   );

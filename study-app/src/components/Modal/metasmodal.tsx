@@ -85,65 +85,68 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   };
 
   const handleSave = async () => {
-    if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
-      Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
+  if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
+    Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
+    return;
+  }
+
+  const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
+
+  if (adjustedDate !== dataConclusao) {
+    setDataConclusao(adjustedDate);
+  }
+
+  const newGoal = {
+    titulo,
+    descricao,
+    dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
+    concluido: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    setLoading(true);
+    const user = auth.currentUser;
+
+    if (!user) {
+      Alert.alert("Erro", "Usuário não autenticado.");
       return;
     }
-  
-    const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
-  
-    if (adjustedDate !== dataConclusao) {
-      setDataConclusao(adjustedDate);
+
+    const metasRef = collection(db, "users", user.uid, "metas");
+
+    if (isEdit && editGoalId) {
+      const goalDocRef = doc(db, "users", user.uid, "metas", editGoalId);
+      await updateDoc(goalDocRef, newGoal);
+      Alert.alert("Sucesso!", "Meta atualizada com sucesso!");
+    } else {
+      const goalDocRef = await addDoc(metasRef, newGoal);
+      const newGoalWithId = { id: goalDocRef.id, ...newGoal };
+      setGoalsList((prevGoals) => {
+        const updatedGoals = [newGoalWithId, ...prevGoals];
+
+        // Separando as metas concluídas das não concluídas
+        const nonConcludedGoals = updatedGoals.filter(goal => !goal.concluido);
+        const concludedGoals = updatedGoals.filter(goal => goal.concluido);
+
+        // Ordenando as metas não concluídas por data de criação
+        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        // Concatenando as metas não concluídas com as concluídas no final
+        return [...nonConcludedGoals, ...concludedGoals];
+      });
+      Alert.alert("Sucesso!", "Meta salva com sucesso!");
     }
-  
-    const newGoal = {
-      titulo,
-      descricao,
-      dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
-      concluido: false,
-      createdAt: new Date().toISOString(),
-    };
-  
-    try {
-      setLoading(true);
-      const user = auth.currentUser;
-  
-      if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado.");
-        return;
-      }
-  
-      const metasRef = collection(db, "users", user.uid, "metas");
-  
-      if (isEdit && editGoalId) {
-        const goalDocRef = doc(db, "users", user.uid, "metas", editGoalId);
-        await updateDoc(goalDocRef, newGoal);
-        Alert.alert("Sucesso!", "Meta atualizada com sucesso!");
-      } else {
-        const goalDocRef = await addDoc(metasRef, newGoal);
-        const newGoalWithId = { id: goalDocRef.id, ...newGoal };
-        setGoalsList((prevGoals) => {
-          const updatedGoals = [newGoalWithId, ...prevGoals];
-          
-          // Separando as metas concluídas das não concluídas
-          const nonConcludedGoals = updatedGoals.filter(goal => !goal.concluido);
-          const concludedGoals = updatedGoals.filter(goal => goal.concluido);
-  
-          // Concatenando as metas não concluídas com as concluídas no final
-          return [...nonConcludedGoals, ...concludedGoals];
-        });
-        Alert.alert("Sucesso!", "Meta salva com sucesso!");
-      }
-  
-      onClose();
-      resetForm();
-    } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao salvar a meta. Tente novamente.");
-      console.error("Erro ao salvar meta no Firebase:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    onClose();
+    resetForm();
+  } catch (error) {
+    Alert.alert("Erro", "Ocorreu um erro ao salvar a meta. Tente novamente.");
+    console.error("Erro ao salvar meta no Firebase:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   
   const handleEdit = (goal: Goal) => {
     setTitulo(goal.titulo);
