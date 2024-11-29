@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingTop: 20,
     },
-    logo: {
+    logo: { 
         width: 300,
         height: 250,
     },

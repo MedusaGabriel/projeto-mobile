@@ -27,6 +27,7 @@ interface GoalContextProps {
 export const GoalContext = createContext<GoalContextProps>({} as GoalContextProps);
 
 interface Goal {
+  createdAt: string | number | Date;
   id: string;
   titulo: string;
   descricao: string;
@@ -63,7 +64,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       }
       const metasRef = collection(db, "users", user.uid, "metas");
       const querySnapshot = await getDocs(metasRef);
-      const metasList: Goal[] = [];
+      let metasList: Goal[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         metasList.push({
@@ -72,8 +73,11 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           descricao: data.descricao,
           dataConclusao: data.dataConclusao,
           concluido: data.concluido || false,
+          createdAt: data.createdAt || new Date().toISOString(), // Adiciona a data de criação
         });
       });
+      metasList = metasList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
       setGoalsList(metasList);
     } catch (error) {
       console.error("Erro ao buscar metas:", error);
@@ -86,10 +90,8 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       return;
     }
   
-    // Ajuste a data para meio-dia (12:00:00) para evitar problemas de fuso horário
     const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
   
-    // Atualizar somente se a data realmente mudar
     if (adjustedDate !== dataConclusao) {
       setDataConclusao(adjustedDate);
     }
@@ -99,6 +101,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       descricao,
       dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
       concluido: false,
+      createdAt: new Date().toISOString(), // Adiciona a data de criação
     };
   
     try {
@@ -119,7 +122,14 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       } else {
         const goalDocRef = await addDoc(metasRef, newGoal);
         const newGoalWithId = { id: goalDocRef.id, ...newGoal };
-        setGoalsList([...goalsList, newGoalWithId]);
+        setGoalsList((prevGoals) => {
+          const updatedGoals = [newGoalWithId, ...prevGoals];
+          return updatedGoals.sort((a, b) => {
+            if (a.concluido && !b.concluido) return 1;
+            if (!a.concluido && b.concluido) return -1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        });
         Alert.alert("Sucesso!", "Meta salva com sucesso!");
       }
   
@@ -131,7 +141,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
   
   const handleEdit = (goal: Goal) => {
     setTitulo(goal.titulo);

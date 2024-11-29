@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Dimensions, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Swipeable } from "react-native-gesture-handler";
 import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
@@ -16,6 +16,7 @@ interface Meta {
   descricao: string;
   dataConclusao: string;
   concluido: boolean;
+  createdAt: string;
 }
 
 const MetasList: React.FC = () => {
@@ -51,7 +52,13 @@ const MetasList: React.FC = () => {
               descricao: data.descricao,
               dataConclusao: data.dataConclusao,
               concluido: data.concluido || false,
+              createdAt: data.createdAt || new Date().toISOString(), // Adiciona a data de criação
             });
+          });
+          metasList.sort((a, b) => {
+            if (a.concluido && !b.concluido) return 1;
+            if (!a.concluido && b.concluido) return -1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
           });
           setGoalsList(metasList); // Atualiza o estado com as metas obtidas do Firestore
         } catch (error) {
@@ -63,28 +70,47 @@ const MetasList: React.FC = () => {
       fetchMetas();
     }
   }, [userId, setGoalsList]);
-
+  
   const toggleConcluido = async (id: string) => {
     const metaRef = doc(db, "users", userId as string, "metas", id);
     try {
       await updateDoc(metaRef, {
         concluido: !goalsList.find(meta => meta.id === id)?.concluido,
       });
-      setGoalsList((prevMetas) =>
-        prevMetas.map((meta) =>
+      setGoalsList((prevMetas) => {
+        const updatedMetas = prevMetas.map((meta) =>
           meta.id === id ? { ...meta, concluido: !meta.concluido } : meta
-        )
-      );
+        );
+  
+        // Reordenar metas: concluídas no final e mais recentes no topo
+        return updatedMetas.sort((a, b) => {
+          if (a.concluido && !b.concluido) return 1;
+          if (!a.concluido && b.concluido) return -1;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+      });
     } catch (error) {
       console.error("Erro ao atualizar meta:", error);
     }
   };
-
+  
   const handleDelete = async (meta: Meta) => {
     try {
       const metaDocRef = doc(db, "users", userId as string, "metas", meta.id);
       await deleteDoc(metaDocRef);
-      setGoalsList((prevMetas) => prevMetas.filter((item) => item.id !== meta.id));
+  
+      // Atualiza a lista de metas, mantendo as metas concluídas no final
+      setGoalsList((prevMetas) => {
+        // Filtra a meta excluída
+        const updatedMetas = prevMetas.filter((item) => item.id !== meta.id);
+  
+        // Separa as metas concluídas das não concluídas
+        const completedMetas = updatedMetas.filter((meta) => meta.concluido);
+        const pendingMetas = updatedMetas.filter((meta) => !meta.concluido);
+  
+        // Combina as metas não concluídas com as concluídas (as concluídas sempre no final)
+        return [...pendingMetas, ...completedMetas];
+      });
     } catch (error) {
       console.error("Erro ao excluir meta:", error);
     }
@@ -103,6 +129,7 @@ const MetasList: React.FC = () => {
     const dataConclusao = new Date(`${year}-${month}-${day}`);
 
     if (!isNaN(dataConclusao.getTime())) {
+      dataConclusao.setDate(dataConclusao.getDate() + 1);
       setDataConclusao(dataConclusao);
     } else {
       console.error("Data de conclusão inválida:", meta.dataConclusao);
@@ -151,8 +178,15 @@ const MetasList: React.FC = () => {
           onSwipeableOpen={(direction) => {
             if (direction === "left") {
               handleEdit(item, index);
-            } else {
-              handleDelete(item);
+            } else if (direction === "right") {
+              Alert.alert(
+                "Excluir Meta",
+                `Tem certeza de que deseja excluir a meta "${item.titulo}"?`,
+                [
+                  { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
+                  { text: "Excluir", style: "destructive", onPress: () => handleDelete(item) },
+                ]
+              );
             }
           }}
         >
@@ -201,14 +235,14 @@ const MetasList: React.FC = () => {
             showsVerticalScrollIndicator={false}
             ListFooterComponent={<View style={{ height: 100 }} />}
             onContentSizeChange={handleContentSizeChange} // Atualiza a altura do conteúdo
-          />
+            />
           {isGradientVisible && ( // Exibe o LinearGradient a partir da 8ª meta
             <LinearGradient
-              colors={["transparent", themas.Colors.bgSecondary]}
-              style={styles.gradient}
+            colors={["transparent", themas.Colors.bgSecondary]}
+            style={styles.gradient}
             />
           )}
-        </>
+       </>
       ) : (
         <Text style={styles.subtitulo}>Sem metas registradas, comece agora!</Text>
       )}
@@ -308,4 +342,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MetasList
+export default MetasList;

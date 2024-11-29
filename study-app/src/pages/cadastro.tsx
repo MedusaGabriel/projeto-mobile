@@ -9,6 +9,7 @@ import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../services/firebaseConfig";
 import { doc, setDoc } from 'firebase/firestore';
 import { themas } from "../global/themes";
+import  cadastroIcon  from '../assets/cadastro.png';
 
 export default function Cadastro() {
     const navigation = useNavigation<NavigationProp<any>>();
@@ -84,12 +85,20 @@ export default function Cadastro() {
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={styles.container}>
                     <View style={styles.boxTop}>
-                        <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-                        <Text style={styles.title}>Cadastre-se</Text>
+                        <Image source={cadastroIcon} style={styles.logo} resizeMode="contain" />
                     </View>
                     <View style={styles.boxCenter}>
+                        <View style={styles.tittlecadastro}>
+                            <Text style={styles.title}>É novo aqui?</Text>
+                            <Text style={styles.title}>Faça seu cadastro!!</Text>
+                        </View>
                         <Input
                             placeholder="Nome de usuário"
+                            boxStyle={{
+                                marginTop: -4,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
                             placeholderTextColor={themas.Colors.secondary}
                             value={username}
                             height={55}
@@ -100,6 +109,11 @@ export default function Cadastro() {
                         />
                         <Input
                             placeholder="Endereço de e-mail"
+                            boxStyle={{
+                                marginTop: 10,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
                             placeholderTextColor={themas.Colors.secondary}
                             height={55}
                             value={email}
@@ -110,6 +124,12 @@ export default function Cadastro() {
                         />
                         <Input
                             placeholder="Senha"
+                            boxStyle={{
+                                marginTop: 10,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginBottom: 10,
+                            }}
                             placeholderTextColor={themas.Colors.secondary}
                             value={password}
                             height={55}
@@ -122,7 +142,14 @@ export default function Cadastro() {
                         />
                     </View>
                     <View style={styles.boxBottom}>
-                        <Button text="Cadastrar" loading={loading} onPress={handleRegister} />
+                        <Button 
+                        text="Cadastrar" 
+                        loading={loading} 
+                        onPress={handleRegister}
+                        textStyle={{ fontSize: 18, fontFamily: themas.Fonts.medium }}
+                        backgroundColor={{ backgroundColor: themas.Colors.blueLigth }}
+                        width="100%"
+                        />
                     </View>
                     {/* Condicionalmente renderiza a mensagem "Já tem conta? Faça Login" */}
                     {!keyboardVisible && (
@@ -141,44 +168,47 @@ export default function Cadastro() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: themas.Colors.bgSecondary,
-        paddingHorizontal: 20,
-        width: '100%',
     },
     boxTop: {
-        width: '100%',
+        marginTop: 50,
+        width: '85%',
+        height: "auto",
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: -5,
-    },
-    title: {
-        fontSize: 24,
-        color: '#fff',
-        fontWeight: 'bold',
+        marginBottom: 25,
     },
     boxCenter: {
-        flex: 0.5,
-        width: '100%',
+        width: '85%',
         justifyContent: 'center',
-        marginBottom: 30,
     },
     boxBottom: {
-        width: '100%',
+        width: '85%',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingBottom: 20,
+        paddingTop: 20,
     },
-    logo: {
-        width: 180,
-        height: 180,
-        marginBottom: 50,
+    tittlecadastro: {
+        marginBottom: 30,
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+    },
+    title: {
+        textAlign: 'left',
+        fontSize: 24,
+        color: themas.Colors.primary,
+        fontFamily: themas.Fonts.extraBold,
+        fontWeight: 'bold',
+    },
+    logo: { 
+        width: 300,
+        height: 250,
     },
     textBottom: {
-        position: "absolute",
-        bottom: 50,
+        position: 'absolute',
+        bottom: 40,
         fontSize: 16,
         color: themas.Colors.secondary,
         fontFamily: themas.Fonts.regular,
