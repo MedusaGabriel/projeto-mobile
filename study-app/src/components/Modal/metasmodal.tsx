@@ -101,7 +101,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
       descricao,
       dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
       concluido: false,
-      createdAt: new Date().toISOString(), // Adiciona a data de criação
+      createdAt: new Date().toISOString(),
     };
   
     try {
@@ -124,11 +124,13 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
         const newGoalWithId = { id: goalDocRef.id, ...newGoal };
         setGoalsList((prevGoals) => {
           const updatedGoals = [newGoalWithId, ...prevGoals];
-          return updatedGoals.sort((a, b) => {
-            if (a.concluido && !b.concluido) return 1;
-            if (!a.concluido && b.concluido) return -1;
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          });
+          
+          // Separando as metas concluídas das não concluídas
+          const nonConcludedGoals = updatedGoals.filter(goal => !goal.concluido);
+          const concludedGoals = updatedGoals.filter(goal => goal.concluido);
+  
+          // Concatenando as metas não concluídas com as concluídas no final
+          return [...nonConcludedGoals, ...concludedGoals];
         });
         Alert.alert("Sucesso!", "Meta salva com sucesso!");
       }

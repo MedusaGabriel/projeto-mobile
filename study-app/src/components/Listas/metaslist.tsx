@@ -15,6 +15,7 @@ interface Meta {
   titulo: string;
   descricao: string;
   dataConclusao: string;
+  dataConclusaoReal?: string;
   concluido: boolean;
   createdAt: string;
 }
@@ -72,27 +73,46 @@ const MetasList: React.FC = () => {
   }, [userId, setGoalsList]);
   
   const toggleConcluido = async (id: string) => {
-    const metaRef = doc(db, "users", userId as string, "metas", id);
-    try {
-      await updateDoc(metaRef, {
-        concluido: !goalsList.find(meta => meta.id === id)?.concluido,
+  if (!userId) return;
+
+  // Referência à meta no Firestore
+  const metaRef = doc(db, "users", userId, "metas", id);
+  const meta = goalsList.find((meta) => meta.id === id);
+
+  if (!meta) {
+    console.error("Meta não encontrada!");
+    return;
+  }
+
+  const newConcluidoStatus = !meta.concluido; // Inverte o estado de conclusão
+  const dataConclusaoReal = newConcluidoStatus ? new Date().toISOString() : null; // Define a data de conclusão real, se necessário
+
+  try {
+    // Atualiza o Firestore
+    await updateDoc(metaRef, {
+      concluido: newConcluidoStatus,
+      dataConclusaoReal: dataConclusaoReal,
+    });
+
+    // Atualiza o estado local
+    setGoalsList((prevMetas) => {
+      const updatedMetas = prevMetas.map((meta) =>
+        meta.id === id
+          ? { ...meta, concluido: newConcluidoStatus, dataConclusaoReal }
+          : meta
+      );
+
+      // Reordena metas: concluídas no final e mais recentes no topo
+      return updatedMetas.sort((a, b) => {
+        if (a.concluido && !b.concluido) return 1;
+        if (!a.concluido && b.concluido) return -1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
-      setGoalsList((prevMetas) => {
-        const updatedMetas = prevMetas.map((meta) =>
-          meta.id === id ? { ...meta, concluido: !meta.concluido } : meta
-        );
-  
-        // Reordenar metas: concluídas no final e mais recentes no topo
-        return updatedMetas.sort((a, b) => {
-          if (a.concluido && !b.concluido) return 1;
-          if (!a.concluido && b.concluido) return -1;
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-      });
-    } catch (error) {
-      console.error("Erro ao atualizar meta:", error);
-    }
-  };
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar meta:", error);
+  }
+};
   
   const handleDelete = async (meta: Meta) => {
     try {
@@ -119,26 +139,46 @@ const MetasList: React.FC = () => {
   const handleEdit = (meta: Meta, index: number) => {
     // Fecha o Swipeable do item atual
     swipeableRefs.current[index]?.close();
-
+  
     // Configura os valores no modal
     setTitulo(meta.titulo);
     setDescricao(meta.descricao);
-
-    // Converte a string de data para um objeto Date usando o construtor Date
+  
     const [day, month, year] = meta.dataConclusao.split('/');
     const dataConclusao = new Date(`${year}-${month}-${day}`);
-
+  
     if (!isNaN(dataConclusao.getTime())) {
       dataConclusao.setDate(dataConclusao.getDate() + 1);
       setDataConclusao(dataConclusao);
     } else {
       console.error("Data de conclusão inválida:", meta.dataConclusao);
-      setDataConclusao(new Date()); // Fallback para a data atual
+      setDataConclusao(new Date());
     }
-
+  
     setIsEdit(true);
     setEditGoalId(meta.id);
     onOpen();
+  
+    // Reordena a lista após a edição
+    setGoalsList((prevMetas) => {
+      const updatedMetas = prevMetas.map((item) =>
+        item.id === meta.id
+          ? {
+              ...item,
+              titulo: meta.titulo,
+              descricao: meta.descricao,
+              dataConclusao: meta.dataConclusao,
+            }
+          : item
+      );
+  
+      // Ordena a lista garantindo que concluídas fiquem no final
+      return updatedMetas.sort((a, b) => {
+        if (a.concluido && !b.concluido) return 1;
+        if (!a.concluido && b.concluido) return -1;
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+    });
   };
 
   const renderRightActions = () => (
@@ -159,15 +199,21 @@ const MetasList: React.FC = () => {
 
   const renderMeta = ({ item, index }: { item: Meta; index: number }) => {
     let formattedDate = item.dataConclusao;
+    if (item.concluido && item.dataConclusaoReal) {
+      formattedDate = item.dataConclusaoReal;
+    }
+  
     try {
-      const date = new Date(item.dataConclusao);
+      const date = new Date(formattedDate);
       if (!isNaN(date.getTime())) {
         formattedDate = format(date, 'dd/MM/yyyy'); // Formato de data desejado
       }
     } catch (error) {
       console.error("Erro ao formatar data:", error);
     }
-
+  
+    const dateLabel = item.concluido ? "Concluído em:" : "Previsão de conclusão:";
+  
     return (
       <View style={styles.swipeableContainer}>
         <Swipeable
@@ -202,7 +248,7 @@ const MetasList: React.FC = () => {
                 <View>
                   <Text style={styles.titleCard}>{item.titulo}</Text>
                   <Text>{item.descricao}</Text>
-                  <Text>Data de Conclusão: {formattedDate}</Text>
+                  <Text>{dateLabel} {formattedDate}</Text>
                 </View>
               </View>
             </View>

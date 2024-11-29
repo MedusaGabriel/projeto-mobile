@@ -1,16 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { firestore, auth } from '../services/firebaseConfig';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { themas } from '../global/themes';
+import { auth, firestore } from '../services/firebaseConfig';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import HorizontalMetasList from '../components/Listas/horizontalmetalist';
+
+interface Meta {
+  id: string;
+  titulo: string;
+  descricao: string;
+  dataConclusao: string;
+  dataConclusaoReal?: string;
+  concluido: boolean;
+  createdAt: string;
+}
 
 function Home() {
   const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-
-  const flatListRef = useRef<FlatList>(null); // Referência para o FlatList
+  const [goalsList, setGoalsList] = useState<Meta[]>([]);
+  const flatListRef = useRef<FlatList>(null);
 
   const today = new Date();
   const currentDay = today.getDate();
@@ -46,10 +57,39 @@ function Home() {
     }
   };
 
+  const fetchMetas = async (uid: string) => {
+    try {
+      const metasRef = collection(firestore, 'users', uid, 'metas');
+      const querySnapshot = await getDocs(metasRef);
+      const metasList: Meta[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        metasList.push({
+          id: doc.id,
+          titulo: data.titulo,
+          descricao: data.descricao,
+          dataConclusao: data.dataConclusao,
+          dataConclusaoReal: data.dataConclusaoReal,
+          concluido: data.concluido || false,
+          createdAt: data.createdAt || new Date().toISOString(),
+        });
+      });
+      metasList.sort((a, b) => {
+        if (a.concluido && !b.concluido) return 1;
+        if (!a.concluido && b.concluido) return -1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      setGoalsList(metasList);
+    } catch (error) {
+      console.error('Erro ao buscar metas:', error);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         fetchUserName(user.uid);
+        fetchMetas(user.uid);
       } else {
         setLoading(false);
       }
@@ -121,15 +161,20 @@ function Home() {
                 {item.day}
               </Text>
               <Text style={styles.weekDayText}>
-                {formatDayName(item.weekDay)} {/* Exibe o nome do dia da semana */}
+                {formatDayName(item.weekDay)}
               </Text>
             </TouchableOpacity>
           )}
           showsHorizontalScrollIndicator={false}
         />
       </View>
-
-      {/* Removi a parte que exibia "Dia 27" abaixo do calendário */}
+      <View style={styles.metasbox}>
+        <Text style={styles.text}>Acompanhe suas Metas</Text>
+        <HorizontalMetasList
+          metas={goalsList}
+          loading={loading}
+        />
+      </View>
     </View>
   );
 }
@@ -187,6 +232,10 @@ const styles = StyleSheet.create({
   todayText: {
     fontWeight: 'bold',
     color: themas.Colors.primary,
+  },
+  metasbox: {
+    height: 190,
+    marginTop: 20,
   },
 });
 
