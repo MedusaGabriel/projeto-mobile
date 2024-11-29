@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { themas } from '../global/themes';
 
 const Atividades = () => {
@@ -11,26 +11,11 @@ const Atividades = () => {
   const [subjects, setSubjects] = useState<{ name: string; day: string; timeRange: string }[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const daysOfWeek = 
-  ['Segunda-feira', 
-    'Terça-feira', 
-    'Quarta-feira', 
-    'Quinta-feira', 
-    'Sexta-feira', 
-    'Sábado', 
-    'Domingo'];
-  const timeRanges = [
-    '08h00 - 10h00',
-    '10h00 - 12h00',
-    '14h00 - 16h00',
-    '16h00 - 18h00',
-    '18h00 - 20h00',
-    '20h00 - 22h00',
-  ];
+  const daysOfWeek = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
+  const timeRanges = ['08h00 - 10h00', '10h00 - 12h00', '14h00 - 16h00', '16h00 - 18h00', '18h00 - 20h00', '20h00 - 22h00'];
 
   const handleAddSubject = () => {
     if (subjectName && dayOfWeek && selectedTimeRange) {
-      // Verifica se a matéria já existe
       if (subjects.some(subject => subject.name === subjectName && editIndex === null)) {
         Alert.alert('Atenção', 'Essa matéria já foi adicionada!');
         return;
@@ -43,16 +28,13 @@ const Atividades = () => {
       };
 
       if (editIndex !== null) {
-        // Se estamos editando, atualiza a matéria existente
         const updatedSubjects = subjects.map((subject, index) => (index === editIndex ? newSubject : subject));
         setSubjects(updatedSubjects);
         setEditIndex(null);
       } else {
-        // Adiciona nova matéria
         setSubjects([...subjects, newSubject]);
       }
 
-      // Limpa os campos
       setSubjectName('');
       setDayOfWeek(undefined);
       setSelectedTimeRange(undefined);
@@ -82,12 +64,12 @@ const Atividades = () => {
     setDayOfWeek(subjectToEdit.day);
     setSelectedTimeRange(subjectToEdit.timeRange);
     setEditIndex(index);
-    setIsAdding(true); // Abre o formulário para edição
+    setIsAdding(true);
   };
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
-      <Text style={styles.text}>Plano de Estudo</Text>
+      <Text style={styles.title}>Minhas atividades</Text>
 
       {isAdding && (
         <View style={styles.formContainer}>
@@ -97,7 +79,7 @@ const Atividades = () => {
             value={subjectName}
             onChangeText={setSubjectName}
           />
-
+          
           <Text style={styles.label}>Selecione o dia da semana:</Text>
           <View style={styles.daysContainer}>
             {daysOfWeek.map((day) => (
@@ -130,51 +112,75 @@ const Atividades = () => {
         </View>
       )}
 
-      <TouchableOpacity style={styles.addButton} onPress={() => setIsAdding(!isAdding)}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
-
       <FlatList
         data={subjects}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
           <View style={styles.subjectContainer}>
             <Text style={styles.subjectText}>{item.name}</Text>
-            <View style={styles.subjectDetails}>
-              <Text style={styles.subjectDetailText}>Dia: {item.day}</Text>
-              <Text style={styles.subjectDetailText}>Horário: {item.timeRange}</Text>
+            <Text style={styles.subjectDetailText}>Dia: {item.day}</Text>
+            <Text style={styles.subjectDetailText}>Horário: {item.timeRange}</Text>
+            <View style={styles.subjectActions}>
               <TouchableOpacity onPress={() => handleEditSubject(index)} style={styles.editButton}>
-                <Text style={{ color: '#007BFF' }}>Editar</Text>
+                <Text style={styles.editButtonText}>Editar</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeleteSubject(index)} style={styles.deleteButton}>
-                <Text style={{ color: '#FF0000' }}>Remover</Text>
+                <Text style={styles.deleteButtonText}>Remover</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
         style={styles.subjectList}
       />
+
+      <TouchableOpacity style={styles.addButton} onPress={() => setIsAdding(!isAdding)}>
+        <AntDesign name="plus" size={40} color={themas.Colors.primary} />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+  container: { 
+    flex: 1, 
+    paddingBottom: 0,
     backgroundColor: themas.Colors.bgScreen,
+    alignItems: 'center',
   },
-  
-  text: {
-    fontSize: 20,
+  title: { 
+    fontSize: 20, 
     color: themas.Colors.primary, 
     fontFamily: themas.Fonts.bold,
-    marginTop: 0, // Ajuste se necessário
+    marginBottom: 10,
   },
-  
-
-  // Day selection styles
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    fontFamily: themas.Fonts.regular,
+    marginBottom: 20,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  formContainer: {
+    width: '80%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
   daysContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -192,8 +198,6 @@ const styles = StyleSheet.create({
   dayButtonText: {
     color: '#fff',
   },
-
-  // Time range selection styles
   timeRangeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -211,53 +215,28 @@ const styles = StyleSheet.create({
   timeRangeText: {
     color: '#fff',
   },
-
-  // Form styles
-  formContainer: {
-    marginTop: 20,
-    width: '80%',
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 10,
-  },
-
-  // Add button styles
-  addButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 50,
+  submitButton: {
+    backgroundColor: '#2196F3',
+    borderRadius: 8,
     padding: 15,
-    width: 60,
-    height: 60,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
+  },
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+  },
+  addButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-
-  // Subject list styles
-  subjectList: {
-    marginTop: 20,
-    width: '80%',
+    bottom: 15,
+    width: 60, 
+    height: 60,
+    backgroundColor: themas.Colors.blueLigth,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    zIndex: 10,
   },
   subjectContainer: {
     backgroundColor: '#FFF',
@@ -269,41 +248,41 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: '80%',
   },
   subjectText: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  subjectDetails: {
-    marginTop: 5,
-  },
   subjectDetailText: {
     fontSize: 14,
     color: '#555',
   },
-  deleteButton: {
-    marginLeft: 10,
-  },
-
-  // Edit button styles
-  editButton: {
-    marginLeft: 10,
-  },
-
-  // Submit button styles
-  submitButton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
+  subjectActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 10,
   },
-  submitButtonText: {
+  editButton: {
+    padding: 5,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+  },
+  deleteButton: {
+    padding: 5,
+    backgroundColor: '#E74C3C',
+    borderRadius: 5,
+  },
+  editButtonText: {
     color: '#FFF',
-    fontSize: 16,
+  },
+  deleteButtonText: {
+    color: '#FFF',
+  },
+  subjectList: {
+    flex: 1,
+    width: '100%',
+    paddingTop: 20,
   },
 });
 
