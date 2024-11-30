@@ -57,23 +57,29 @@ export const MetasModal: React.FC<MetasModalProps> = ({ children, isEdit = false
       Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
       return;
     }
-
+  
     const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
-
+  
+    const generateUniqueId = () => {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 1000000);
+      return `${timestamp}_${random}`;
+    };
+    
     const newGoal = {
-      id: editGoal?.id || '',
+      id: editGoal?.id || generateUniqueId(),
       titulo,
       descricao,
       dataConclusao: format(adjustedDate, 'yyyy-MM-dd', { locale: ptBR }),
       concluido: false,
       createdAt: new Date().toISOString(),
     };
-
-    await handleSave(newGoal, isEdit, editGoal?.id || '');
+  
+    await handleSave(newGoal, isEdit, editGoal?.id || newGoal.id);
     onClose();
     resetForm();
   };
-
+  
   const resetForm = () => {
     setTitulo('');
     setDescricao('');
