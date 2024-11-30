@@ -41,7 +41,7 @@ const Mais = () => {
     try {
       await signOut(auth);
       console.log('Logout realizado com sucesso');
-      navigation.navigate('Login');
+      navigation.reset({ routes: [{ name: 'Login' }] });
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
