@@ -67,7 +67,7 @@ const Curso = () => {
       <Text style={styles.title}>Qual seu nível de ensino?</Text>
 
       <View style={styles.boxMid}>
-        {/* Dropdown para seleção de cursos */}
+        
         <RNPickerSelect
           value={curso}
           onValueChange={setCurso}
@@ -86,10 +86,17 @@ const Curso = () => {
           useNativeAndroidPickerStyle={false} // Desativa o estilo nativo do Android
         />
 
-        <View style={styles.boxBottom}>
-          <Button text="Próximo" loading={loading} onPress={getCurso} />
-        </View>
       </View>
+        <View style={styles.boxBottom}>
+        <Button 
+                        text="Próximo" 
+                        loading={loading} 
+                        onPress={getCurso}
+                        textStyle={{ fontSize: 18, fontFamily: themas.Fonts.medium }}
+                        backgroundColor={{ backgroundColor: themas.Colors.blueLigth }}
+                        width="100%"
+                        />
+        </View>
     </View>
   );
 };
@@ -97,34 +104,28 @@ const Curso = () => {
 // Estilos para o PickerSelect
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    height: 55, // Ajustado para um tamanho mais adequado
-    width: '80%', // Ajuste de largura para o dropdown
-    borderColor: 'themas.Colors.bgScreen',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingLeft: 12, // Padding mais confortável
-    marginTop: 10,
+    height: 55,
+    width: '100%',
+    borderRadius: 15,
+    paddingLeft: 12,
     fontSize: 16,
     fontFamily: themas.Fonts.regular,
     color: themas.Colors.secondary,
-    paddingRight: 40, // Espaço à direita para o ícone
-    alignSelf: 'center', // Centraliza horizontalmente
+    paddingRight: 40,
+    alignSelf: 'center',
     backgroundColor: themas.Colors.bgScreen,
-    pointerEvents: 'none', // Impede que o campo de texto seja clicado
+    pointerEvents: 'none',
   },
   inputAndroid: {
     height: 55, // Altura padrão
-    width: '90%', // Largura padrão
-    borderColor: 'themas.Colors.bgScreen',
-    borderWidth: 1,
-    borderRadius: 8,
+    width: '100%', // Largura padrão
+    borderRadius: 15,
     paddingHorizontal: 12, // Padding horizontal uniforme
-    marginTop: 10,
     fontSize: 16,
     fontFamily: themas.Fonts.regular,
     color: themas.Colors.secondary,
     alignSelf: 'center', // Centralizado horizontalmente
-    backgroundColor: '#fff', // Fundo branco
+    backgroundColor: themas.Colors.bgScreen,
 },
   iconContainer: {
     position: 'absolute', 
@@ -150,8 +151,8 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Espaço abaixo do texto
   },
   boxMid: {
-    width: '100%', // Usar 100% da largura disponível
-    alignItems: 'center', // Centralizar o conteúdo dentro da caixa
+    marginTop: 20,
+    width: '100%',
   },
   boxBottom: {
     marginTop: 20,
@@ -161,8 +162,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#fff',
-    fontWeight: 'bold',
+    color: themas.Colors.primary,
+    fontFamily: themas.Fonts.bold,
 },
 });
 

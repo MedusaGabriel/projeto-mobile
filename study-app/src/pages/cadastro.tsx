@@ -19,7 +19,7 @@ export default function Cadastro() {
     const [username, setUsername] = useState('');
     const [showPassword, setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
     const [createUserWithEmailAndPassword, firebaseUser, firebaseLoading, error] =
         useCreateUserWithEmailAndPassword(auth);
@@ -77,17 +77,31 @@ export default function Cadastro() {
         setLoading(false);
     }
 
+    useEffect(() => {
+        const keyboardDidShow = () => setKeyboardVisible(true);
+        const keyboardDidHide = () => setKeyboardVisible(false);
+    
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", keyboardDidShow);
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", keyboardDidHide);
+    
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
         >
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={styles.container}>
+                {!isKeyboardVisible && (
                     <View style={styles.boxTop}>
                         <Image source={cadastroIcon} style={styles.logo} resizeMode="contain" />
                     </View>
-                    <View style={styles.boxCenter}>
+                )}
+                    <View style={[styles.boxCenter, isKeyboardVisible && { marginTop: +120 }]}>
                         <View style={styles.tittlecadastro}>
                             <Text style={styles.title}>É novo aqui?</Text>
                             <Text style={styles.title}>Faça seu cadastro!!</Text>
@@ -152,7 +166,7 @@ export default function Cadastro() {
                         />
                     </View>
                     {/* Condicionalmente renderiza a mensagem "Já tem conta? Faça Login" */}
-                    {!keyboardVisible && (
+                    {!isKeyboardVisible && (
                         <Text style={styles.textBottom}>
                             Já tem conta? 
                             <TouchableOpacity onPress={() => navigation.navigate('Login')}>

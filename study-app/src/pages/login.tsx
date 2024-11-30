@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, TouchableOpacity, Alert, View, Text, Image, KeyboardAvoidingView, Platform } from "react-native";
+import { 
+    StyleSheet, 
+    TouchableOpacity, 
+    Alert, 
+    View, 
+    Text, 
+    Image, 
+    KeyboardAvoidingView, 
+    Keyboard, 
+    Platform 
+} from "react-native";
 import Loginicon from '../assets/login.png';
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -11,11 +21,11 @@ import { themas } from '../global/themes';
 
 export default function Login() {
     const navigation = useNavigation<NavigationProp<any>>();
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const [signInWithEmailAndPassword, firebaseUser, firebaseloading, error] =
         useSignInWithEmailAndPassword(auth);
 
@@ -42,16 +52,31 @@ export default function Login() {
         }
     }, [error]);
 
+    // Monitorar o estado do teclado
+    useEffect(() => {
+        const keyboardDidShow = () => setKeyboardVisible(true);
+        const keyboardDidHide = () => setKeyboardVisible(false);
+    
+        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", keyboardDidShow);
+        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", keyboardDidHide);
+    
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.container}>
+            {!isKeyboardVisible && (
                 <View style={styles.boxTop}>
                     <Image source={Loginicon} style={styles.logo} resizeMode="contain" />
                 </View>
-                <View style={styles.boxCenter}>
+            )}
+                <View style={[styles.boxCenter, isKeyboardVisible && { marginTop: +150 }]}>
                     <View style={styles.tittlelogin}>
                         <Text style={styles.title}>Bem-vindo,</Text>
                         <Text style={styles.title}>Pronto para a jornada?</Text>
@@ -89,22 +114,22 @@ export default function Login() {
                         style={{ backgroundColor: themas.Colors.bgScreen }}
                     />
                 </View>
-                <View style={styles.boxBottom}>
-                    <Button
-                        text="Entrar"
-                        loading={loading}
-                        onPress={() => getLogin()}
-                        textStyle={{ fontSize: 18, fontFamily: themas.Fonts.medium }}
-                        backgroundColor={{ backgroundColor: themas.Colors.blueLigth }}
-                        width="100%"
-                    />
-                </View>
-                <Text style={styles.textBottom}>
-                    Não tem conta?
-                    <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-                        <Text style={styles.textBottomCreate}> Crie agora</Text>
-                    </TouchableOpacity>
-                </Text>
+                    <View style={styles.boxBottom}>
+                        <Button
+                            text="Entrar"
+                            loading={loading}
+                            onPress={() => getLogin()}
+                            textStyle={{ fontSize: 18, fontFamily: themas.Fonts.medium }}
+                            backgroundColor={{ backgroundColor: themas.Colors.blueLigth }}
+                            width="100%"
+                        />
+                    </View>
+                    <Text style={styles.textBottom}>
+                        Não tem conta?
+                        <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+                            <Text style={styles.textBottomCreate}> Crie agora</Text>
+                        </TouchableOpacity>
+                    </Text>
             </View>
         </KeyboardAvoidingView>
     );
