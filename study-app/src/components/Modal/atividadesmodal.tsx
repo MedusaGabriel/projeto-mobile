@@ -34,7 +34,7 @@ interface Activity {
   id: string;
   titulo: string;
   descricao: string;
-  materia : string;
+  materia: string;
   dataConclusao: string;
   icon: string;
   color: string;
@@ -73,7 +73,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
         Alert.alert("Erro", "Usuário não autenticado.");
         return;
       }
-      const activitiesRef = collection(db, "users", user.uid, "activities");
+      const activitiesRef = collection(db, "users", user.uid, "atividades");
       const querySnapshot = await getDocs(activitiesRef);
       let activitiesList: Activity[] = [];
       querySnapshot.forEach((doc) => {
@@ -98,7 +98,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
   };
 
   const handleSave = async () => {
-    if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
+    if (!titulo.trim() || !descricao.trim() || !dataConclusao || !materia.trim()) {
       Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
       return;
     }
@@ -129,10 +129,10 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const activitiesRef = collection(db, "users", user.uid, "activities");
+      const activitiesRef = collection(db, "users", user.uid, "atividades");
 
       if (isEdit && editActivityId) {
-        const activityDocRef = doc(db, "users", user.uid, "activities", editActivityId);
+        const activityDocRef = doc(db, "users", user.uid, "atividades", editActivityId);
         await updateDoc(activityDocRef, newActivity);
         Alert.alert("Sucesso!", "Atividade atualizada com sucesso!");
       } else {
@@ -176,6 +176,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
   const resetForm = () => {
     setTitulo('');
     setDescricao('');
+    setMateria('');
     setDataConclusao(new Date());
     setIcon('home'); // Reset to default icon
     setColor('#00FF00'); // Reset to default color
@@ -218,18 +219,21 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
           />
           <Input
             title="Descrição:"
-            labelStyle={styles.label}
             value={descricao}
+            labelStyle={{
+              marginTop: 10,
+              marginLeft: 10,
+              fontFamily: themas.Fonts.medium,
+              color: themas.Colors.secondary,
+            }}
             multiline
             numberOfLines={5}
             onChangeText={setDescricao}
           />
-        <Input
+          <Input
             title="Nome da Matéria:"
             labelStyle={styles.label}
             value={materia}
-            multiline
-            numberOfLines={5}
             onChangeText={setMateria}
           />
           <View style={styles.dateContainer}>
@@ -278,12 +282,12 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
             )}
           </View>
           <View style={styles.iconColorPickerButtonView} >
-          <TouchableOpacity onPress={() => setShowIconPicker(true)} style={styles.iconColorPickerButton}>
-            <MaterialIcons name={icon as any} size={30} color={color} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowColorPicker(true)} style={styles.iconColorPickerButton}>
-            <View style={[styles.colorCircle, { backgroundColor: color }]} />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowIconPicker(true)} style={styles.iconColorPickerButton}>
+              <MaterialIcons name={icon as any} size={30} color={color} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowColorPicker(true)} style={styles.iconColorPickerButton}>
+              <View style={[styles.colorCircle, { backgroundColor: color }]} />
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -300,7 +304,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
         </Modal>
       )}
       {children}
-      <Modalize ref={modalizeRef} adjustToContentHeight modalStyle={styles.modal}>
+      <Modalize ref={modalizeRef} adjustToContentHeight modalStyle={styles.modal} onOverlayPress={resetForm}>
         {_container()}
       </Modalize>
       <IconColorPickerModal
@@ -324,139 +328,139 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
 export const useActivity = () => useContext(ActivityContext);
 
 const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        backgroundColor: themas.Colors.bgSecondary,
-        borderTopLeftRadius: 30, 
-        borderTopRightRadius: 30, 
-        overflow: 'hidden',    
-      },
-    header: {
-        width: '100%',
-        height: 40,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontFamily: themas.Fonts.bold,
-        color: themas.Colors.primary,
-    },
-    content: {
-      width: '100%',
-      paddingHorizontal: 10,
-    },
-    label: {
-      fontFamily: themas.Fonts.medium,
-      color: themas.Colors.secondary,
-    },
-    inputContainer: {
-        width: '100%',
-        alignItems: 'flex-start', 
-        alignSelf: 'flex-end',
-    },
-    dateContainer: {
-        marginTop: 25,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderColor: 'white',
-      },
-      dateLabelContainer: {
-        width: '50%',
-      },
-      labeldate: {
-        fontFamily: themas.Fonts.medium,
-        color: themas.Colors.secondary,
-      },
-      dateInputContainer: {
-        width: '50%',
-      },
-      datePickerWrapper: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        zIndex: 10,
-      },
-      dateText: {
-        fontFamily: themas.Fonts.medium,
-        color: themas.Colors.secondary,
-        fontSize: 16,
-      },
-      datePicker: {
-        padding: 10,
-        backgroundColor: themas.Colors.bgScreen,
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10,
-      },
-      charCounter: {
-        marginTop: 5,
-        fontSize: 12,
-        color: themas.Colors.secondary,
-        fontFamily: themas.Fonts.medium,
-        alignSelf: 'flex-end',
-      },
-    iconColorPickerButtonView: {
-        marginTop: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    iconColorPickerButton: {
-        width: '48%',
-        height: 50,
-        backgroundColor: themas.Colors.bgScreen,
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10,
-        flexDirection: 'row',
-    },
-    colorCircle: {
-      width: 20,
-      height: 20,
-      borderRadius: 10,
-      marginRight: 10,
-    },
-    loadingContainer: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000,
-    },
-    loadingBox: {
-      width: 150,
-      height: 150,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      borderRadius: 15,
-      justifyContent: 'center',
-      alignItems: 'center',
-      elevation: 5,
-    },
-    loadingText: {
-      color: 'white',
-      fontSize: 18,
-      fontFamily: themas.Fonts.medium,
-      textAlign: 'center',
-      marginTop: 10,
-    },
-    modal: {
-      backgroundColor: themas.Colors.bgSecondary,
-      borderTopLeftRadius: 30,
-      borderTopRightRadius: 30,
-      padding: 20,
-    },
-  });
+  container: {
+    width: '100%',
+    backgroundColor: themas.Colors.bgSecondary,
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30, 
+    overflow: 'hidden',    
+  },
+  header: {
+    width: '100%',
+    height: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: themas.Fonts.bold,
+    color: themas.Colors.primary,
+  },
+  content: {
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  label: {
+    fontFamily: themas.Fonts.medium,
+    color: themas.Colors.secondary,
+  },
+  inputContainer: {
+    width: '100%',
+    alignItems: 'flex-start', 
+    alignSelf: 'flex-end',
+  },
+  dateContainer: {
+    marginTop: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderColor: 'white',
+  },
+  dateLabelContainer: {
+    width: '50%',
+  },
+  labeldate: {
+    fontFamily: themas.Fonts.medium,
+    color: themas.Colors.secondary,
+  },
+  dateInputContainer: {
+    width: '50%',
+  },
+  datePickerWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 10,
+  },
+  dateText: {
+    fontFamily: themas.Fonts.medium,
+    color: themas.Colors.secondary,
+    fontSize: 16,
+  },
+  datePicker: {
+    padding: 10,
+    backgroundColor: themas.Colors.bgScreen,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  charCounter: {
+    marginTop: 5,
+    fontSize: 12,
+    color: themas.Colors.secondary,
+    fontFamily: themas.Fonts.medium,
+    alignSelf: 'flex-end',
+  },
+  iconColorPickerButtonView: {
+    marginTop: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconColorPickerButton: {
+    width: '48%',
+    height: 50,
+    backgroundColor: themas.Colors.bgScreen,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+    flexDirection: 'row',
+  },
+  colorCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingBox: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: themas.Fonts.medium,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  modal: {
+    backgroundColor: themas.Colors.bgSecondary,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+  },
+});

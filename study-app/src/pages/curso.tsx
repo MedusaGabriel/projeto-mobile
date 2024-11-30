@@ -6,7 +6,6 @@ import { firestore, auth } from '../services/firebaseConfig';
 import { doc, updateDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import RNPickerSelect from 'react-native-picker-select';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Importando o ícone
 import { themas } from '../global/themes'; 
 
 const Curso = () => {
@@ -60,7 +59,7 @@ const Curso = () => {
     }
 
     setLoading(false);
-    navigation.navigate('Adcmaterias'); // Navega para a próxima tela
+    navigation.navigate('AppRouter');
   };
 
   return (

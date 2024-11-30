@@ -334,6 +334,7 @@ const styles = StyleSheet.create({
     color: themas.Colors.gray,
   },
   rowCardLeft: {
+    paddingLeft: 10,
     width: '80%',
     flexDirection: 'row',
     gap: 10,

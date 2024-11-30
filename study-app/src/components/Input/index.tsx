@@ -118,6 +118,7 @@ export const style = StyleSheet.create({
         fontSize: 16,
         borderRadius: 10,
         fontFamily: themas.Fonts.regular,
+        paddingRight: 10,
     },
     titleInput: {
         marginLeft: 5,

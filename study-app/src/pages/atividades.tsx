@@ -3,17 +3,18 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { themas } from '../global/themes';
 import { AntDesign } from '@expo/vector-icons';
 import { useActivity } from '../components/Modal/atividadesmodal';
+import AtividadesList from '../components/Listas/atividadeslist';
 
 export default function Atividades() {
   const { onOpen } = useActivity();
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
-      <Text style={styles.title}>Minhas Metas</Text>
+      <Text style={styles.title}>Minhas Atividades</Text>
       <TouchableOpacity style={styles.button} onPress={onOpen}>
         <AntDesign name="plus" size={40} color={themas.Colors.primary} />
       </TouchableOpacity>
-      
+      <AtividadesList/>
     </View>
   );
 }

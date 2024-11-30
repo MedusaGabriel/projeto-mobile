@@ -54,7 +54,7 @@ const IconColorPickerModal: React.FC<IconColorPickerModalProps> = ({ visible, on
             />
           )}
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <AntDesign name="close" size={30} color={themas.Colors.primary} />
+            <AntDesign name="close" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
         </View>
       </View>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Platform, View, StyleSheet, Modal } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { themas } from "../../global/themes";
 
 interface CustomDateTimePickerProps {
   type: "date" | "time";
@@ -59,8 +60,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Background escurecido para destaque do modal
   },
   pickerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
     width: '80%', // Ajusta a largura do DateTimePicker
-    backgroundColor: 'white', // Cor de fundo mais clara
+    backgroundColor: themas.Colors.bgScreen, // Cor de fundo mais clara
     borderRadius: 10, // Bordas arredondadas
     padding: 20, // Espaçamento interno
     shadowColor: '#000', 
