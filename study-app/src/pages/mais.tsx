@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: themas.Colors.bgScreen,
     flex: 1,
-    justifyContent: 'flex-start',
     paddingHorizontal: 20,
+    alignItems: 'center',
   },
   card: {
     backgroundColor: themas.Colors.bgSecondary,
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     color: themas.Colors.primary, 
     fontFamily: themas.Fonts.bold,
     marginBottom: 10,
+    alignSelf: 'flex-start',
   },
   text: {
     fontSize: 16,
@@ -130,6 +131,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 15,
     width: '100%',
+    alignItems: 'center',
   },
 });
 

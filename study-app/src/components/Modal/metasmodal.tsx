@@ -1,4 +1,4 @@
-import React, { useRef, useState, ReactNode, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
 import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
@@ -19,12 +19,11 @@ interface Goal {
 }
 
 interface MetasModalProps {
-  children: ReactNode;
   isEdit?: boolean;
   editGoal?: Goal | null;
 }
 
-export const MetasModal: React.FC<MetasModalProps> = ({ children, isEdit = false, editGoal = null }) => {
+export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal = null }) => {
   const modalizeRef = useRef<Modalize>(null);
   const [titulo, setTitulo] = useState(editGoal?.titulo || '');
   const [descricao, setDescricao] = useState(editGoal?.descricao || '');
@@ -169,22 +168,19 @@ export const MetasModal: React.FC<MetasModalProps> = ({ children, isEdit = false
   );
 
   return (
-    <>
-      {children}
-      <Modalize
-        ref={modalizeRef}
-        adjustToContentHeight
-        modalStyle={{
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          backgroundColor: themas.Colors.bgSecondary,
-          zIndex: 1
-        }}
-        onOverlayPress={resetForm}
-      >
-        {_container()}
-      </Modalize>
-    </>
+    <Modalize
+      ref={modalizeRef}
+      adjustToContentHeight
+      modalStyle={{
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        backgroundColor: themas.Colors.bgSecondary,
+        zIndex: 1
+      }}
+      onOverlayPress={resetForm}
+    >
+      {_container()}
+    </Modalize>
   );
 };
 

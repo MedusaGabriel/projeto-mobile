@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AtividadesModal } from '../components/Modal/atividadesmodal';
+import { ActivityProvider } from '../components/Context/authcontextatividades';
 import { GoalProvider } from '../components/Context/authcontextmetas';
 import React from 'react';
 import { Image } from 'react-native';
@@ -69,9 +69,9 @@ export default function AppRouter() {
         options={{ headerShown: false }}
       >
         {() => (
-          <AtividadesModal>
+          <ActivityProvider>
             <Atividades />
-          </AtividadesModal>
+          </ActivityProvider>
         )}
       </Tab.Screen>
       <Tab.Screen name="Preferências" component={Mais} />

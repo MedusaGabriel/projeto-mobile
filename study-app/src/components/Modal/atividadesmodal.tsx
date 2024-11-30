@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useState, ReactNode } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
 import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal } from 'react-native';
@@ -7,30 +7,10 @@ import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { serverTimestamp, addDoc, collection, doc, getDocs, updateDoc } from 'firebase/firestore';
-import { auth, db } from "../../services/firebaseConfig";
+import { useActivity } from "../Context/authcontextatividades";
 import IconColorPickerModal from '../Modal/iconcolorpickermodal';
 
-const FieldValue = { serverTimestamp };
-
-interface ActivityContextProps {
-  onOpen: () => void;
-  activitiesList: any[];
-  setActivitiesList: React.Dispatch<React.SetStateAction<Activity[]>>;
-  setTitulo: React.Dispatch<React.SetStateAction<string>>;
-  setDescricao: React.Dispatch<React.SetStateAction<string>>;
-  setDataConclusao: React.Dispatch<React.SetStateAction<Date>>;
-  setIcon: React.Dispatch<React.SetStateAction<string>>;
-  setColor: React.Dispatch<React.SetStateAction<string>>;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  setEditActivityId: React.Dispatch<React.SetStateAction<string | null>>;
-  handleEdit: (activity: Activity) => void;
-}
-
-export const ActivityContext = createContext<ActivityContextProps>({} as ActivityContextProps);
-
 interface Activity {
-  createdAt: string | number | Date;
   id: string;
   titulo: string;
   descricao: string;
@@ -38,150 +18,90 @@ interface Activity {
   dataConclusao: string;
   icon: string;
   color: string;
-  concluido: boolean;
+  status: string;
+  createdAt: string;
 }
 
-export const AtividadesModal = ({ children }: { children: ReactNode }) => {
+interface AtividadesModalProps {
+  isEdit?: boolean;
+  editActivity?: Activity | null;
+}
+
+export const AtividadesModal: React.FC<AtividadesModalProps> = ({ isEdit = false, editActivity = null }) => {
   const modalizeRef = useRef<Modalize>(null);
-  const [titulo, setTitulo] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [dataConclusao, setDataConclusao] = useState(new Date());
-  const [materia, setMateria] = useState('');
-  const [icon, setIcon] = useState('home'); // Default icon set to 'home'
-  const [color, setColor] = useState('#00FF00'); // Default color set to green
-  const [isEdit, setIsEdit] = useState(false);
-  const [editActivityId, setEditActivityId] = useState<string | null>(null);
+  const [titulo, setTitulo] = useState(editActivity?.titulo || '');
+  const [descricao, setDescricao] = useState(editActivity?.descricao || '');
+  const [dataConclusao, setDataConclusao] = useState(editActivity ? new Date(editActivity.dataConclusao) : new Date());
+  const [materia, setMateria] = useState(editActivity?.materia || '');
+  const [icon, setIcon] = useState(editActivity?.icon || 'home');
+  const [color, setColor] = useState(editActivity?.color || '#00FF00');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
-
-  const [activitiesList, setActivitiesList] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const { handleSave, setOnOpen } = useActivity();
   const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });
 
   const onOpen = () => modalizeRef.current?.open();
   const onClose = () => {
     modalizeRef.current?.close();
     resetForm();
-    fetchActivities();
   };
 
-  const fetchActivities = async () => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado.");
-        return;
-      }
-      const activitiesRef = collection(db, "users", user.uid, "atividades");
-      const querySnapshot = await getDocs(activitiesRef);
-      let activitiesList: Activity[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        activitiesList.push({
-          id: doc.id,
-          titulo: data.titulo,
-          descricao: data.descricao,
-          materia: data.materia,
-          dataConclusao: data.dataConclusao,
-          icon: data.icon || '',
-          color: data.color || '#FFFFFF',
-          concluido: data.concluido || false,
-          createdAt: data.createdAt || new Date().toISOString(),
-        });
-      });
-      activitiesList = activitiesList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setActivitiesList(activitiesList);
-    } catch (error) {
-      console.error("Erro ao buscar atividades:", error);
+  useEffect(() => {
+    setOnOpen(() => onOpen);
+  }, [setOnOpen]);
+
+  useEffect(() => {
+    if (isEdit && editActivity) {
+      setTitulo(editActivity.titulo);
+      setDescricao(editActivity.descricao);
+      setDataConclusao(new Date(editActivity.dataConclusao));
+      setIcon(editActivity.icon);
+      setColor(editActivity.color);
+      setMateria(editActivity.materia);
     }
-  };
+  }, [isEdit, editActivity]);
 
-  const handleSave = async () => {
-    if (!titulo.trim() || !descricao.trim() || !dataConclusao || !materia.trim()) {
+  const handleSaveActivity = async () => {
+    if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
       Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
       return;
     }
 
     const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
 
-    if (adjustedDate !== dataConclusao) {
-      setDataConclusao(adjustedDate);
-    }
+    const generateUniqueId = () => {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 1000000);
+      return `${timestamp}_${random}`;
+    };
 
-    const newActivity = {
+    const newActivity: Activity = {
+      id: editActivity?.id || generateUniqueId(),
       titulo,
       descricao,
       materia,
-      dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
+      dataConclusao: format(adjustedDate, 'yyyy-MM-dd', { locale: ptBR }),
       icon,
       color,
-      concluido: false,
+      status: 'incompleto',
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      setLoading(true);
-      const user = auth.currentUser;
-
-      if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado.");
-        return;
-      }
-
-      const activitiesRef = collection(db, "users", user.uid, "atividades");
-
-      if (isEdit && editActivityId) {
-        const activityDocRef = doc(db, "users", user.uid, "atividades", editActivityId);
-        await updateDoc(activityDocRef, newActivity);
-        Alert.alert("Sucesso!", "Atividade atualizada com sucesso!");
-      } else {
-        const activityDocRef = await addDoc(activitiesRef, newActivity);
-        const newActivityWithId = { id: activityDocRef.id, ...newActivity };
-        setActivitiesList((prevActivities) => [newActivityWithId, ...prevActivities]);
-        Alert.alert("Sucesso!", "Atividade salva com sucesso!");
-      }
-
-      onClose();
-      resetForm();
-    } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao salvar a atividade. Tente novamente.");
-      console.error("Erro ao salvar atividade no Firebase:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (activity: Activity) => {
-    setTitulo(activity.titulo);
-    setDescricao(activity.descricao);
-    setIcon(activity.icon);
-    setColor(activity.color);
-
-    let date: Date;
-    if (activity.dataConclusao.includes('/')) {
-      const [day, month, year] = activity.dataConclusao.split('/');
-      date = new Date(`${year}-${month}-${day}T12:00:00`);
-    } else {
-      date = new Date(activity.dataConclusao);
-      date.setHours(12, 0, 0, 0);
-    }
-
-    setDataConclusao(date);
-    setIsEdit(true);
-    setEditActivityId(activity.id);
-    onOpen();
+    await handleSave(newActivity, isEdit, editActivity?.id || newActivity.id);
+    onClose();
+    resetForm();
   };
 
   const resetForm = () => {
     setTitulo('');
     setDescricao('');
-    setMateria('');
     setDataConclusao(new Date());
-    setIcon('home'); // Reset to default icon
-    setColor('#00FF00'); // Reset to default color
-    setIsEdit(false);
-    setEditActivityId(null);
+    setIcon('home');
+    setColor('#00FF00');
+    setMateria('');
   };
 
   const handleSelectIcon = (selectedIcon: string) => {
@@ -206,7 +126,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
             <MaterialIcons name="close" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
           <Text style={styles.title}>{isEdit ? "Edite sua Atividade" : "Crie uma Atividade"}</Text>
-          <TouchableOpacity onPress={handleSave}>
+          <TouchableOpacity onPress={handleSaveActivity}>
             <AntDesign name="check" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
         </View>
@@ -219,15 +139,8 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
           />
           <Input
             title="Descrição:"
+            labelStyle={styles.label}
             value={descricao}
-            labelStyle={{
-              marginTop: 10,
-              marginLeft: 10,
-              fontFamily: themas.Fonts.medium,
-              color: themas.Colors.secondary,
-            }}
-            multiline
-            numberOfLines={5}
             onChangeText={setDescricao}
           />
           <Input
@@ -240,7 +153,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
             <View style={styles.dateLabelContainer}>
               <Text style={styles.labeldate}>Data prevista para conclusão:</Text>
             </View>
-  
+
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
               style={styles.dateInputContainer}
@@ -264,24 +177,23 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
                 value={formattedDate}
               />
             </TouchableOpacity>
-  
+
             {showDatePicker && (
               <View style={styles.datePickerWrapper}>
                 <CustomDateTimePicker
                   type="date"
                   onDateChange={(date) => {
-                    // Ajustar a data para meio-dia (12:00) para evitar problemas de fuso horário
                     date.setHours(12, 0, 0, 0);
                     setDataConclusao(date);
                   }}
                   show={showDatePicker}
                   setShow={setShowDatePicker}
-                  selectedDate={dataConclusao}  // Passando dataConclusao corretamente
+                  selectedDate={dataConclusao}
                 />
               </View>
             )}
           </View>
-          <View style={styles.iconColorPickerButtonView} >
+          <View style={styles.iconColorPickerButtonView}>
             <TouchableOpacity onPress={() => setShowIconPicker(true)} style={styles.iconColorPickerButton}>
               <MaterialIcons name={icon as any} size={30} color={color} />
             </TouchableOpacity>
@@ -295,7 +207,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <ActivityContext.Provider value={{ onOpen, activitiesList, setActivitiesList, setTitulo, setDescricao, setDataConclusao, setIcon, setColor, setIsEdit, setEditActivityId, handleEdit }}>
+    <>
       {loading && (
         <Modal transparent>
           <View style={styles.loadingContainer}>
@@ -303,8 +215,7 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
           </View>
         </Modal>
       )}
-      {children}
-      <Modalize ref={modalizeRef} adjustToContentHeight modalStyle={styles.modal} onOverlayPress={resetForm}>
+      <Modalize ref={modalizeRef} adjustToContentHeight modalStyle={styles.modal}>
         {_container()}
       </Modalize>
       <IconColorPickerModal
@@ -321,11 +232,11 @@ export const AtividadesModal = ({ children }: { children: ReactNode }) => {
         onSelectColor={handleSelectColor}
         type="color"
       />
-    </ActivityContext.Provider>
+    </>
   );
 };
 
-export const useActivity = () => useContext(ActivityContext);
+export default AtividadesModal;
 
 const styles = StyleSheet.create({
   container: {

@@ -15,7 +15,7 @@ export default function Metas() {
         <AntDesign name="plus" size={40} color={themas.Colors.primary} />
       </TouchableOpacity>
       <MetasList />
-      <MetasModal children={undefined} />
+      <MetasModal/>
     </View>
   );
 }

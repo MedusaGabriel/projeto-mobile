@@ -36,26 +36,44 @@ const MetasList: React.FC = () => {
     </View>
   );
 
-  
   const renderLeftActions = () => (
     <View style={[styles.Button, { backgroundColor: themas.Colors.blueLigth, marginLeft: 20, marginRight: -20 }]}>
       <AntDesign name="edit" size={20} color={'#FFF'} />
       <Text style={styles.ButtonText}>Editar</Text>
     </View>
   );
-  
+
   const adjustDate = (dateString: string) => {
     const date = new Date(dateString);
     date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     return date;
   };
-  
+
+  const onSwipeableOpen = (direction: string, item: Meta, index: number) => {
+    if (direction === "left") {
+      swipeableRefs.current[index]?.close();
+      setEditGoal(item);
+      setIsEdit(true);
+      handleEdit(item);
+      onOpen();
+    } else if (direction === "right") {
+      Alert.alert(
+        "Excluir Meta",
+        `Tem certeza de que deseja excluir a meta "${item.titulo}"?`,
+        [
+          { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
+          { text: "Excluir", style: "destructive", onPress: () => handleDelete(item.id) },
+        ]
+      );
+    }
+  };
+
   const renderMeta = ({ item, index }: { item: Meta; index: number }) => {
     let formattedDate = item.dataConclusao;
     if (item.concluido && item.dataConclusaoReal) {
       formattedDate = item.dataConclusaoReal;
     }
-  
+
     try {
       const date = adjustDate(formattedDate);
       if (!isNaN(date.getTime())) {
@@ -64,9 +82,9 @@ const MetasList: React.FC = () => {
     } catch (error) {
       console.error("Erro ao formatar data:", error);
     }
-  
+
     const dateLabel = item.concluido ? "Concluído em:" : "Previsão de conclusão:";
-  
+
     return (
       <View style={styles.swipeableContainer}>
         <Swipeable
@@ -74,24 +92,7 @@ const MetasList: React.FC = () => {
           key={item.id}
           renderRightActions={renderRightActions}
           renderLeftActions={renderLeftActions}
-          onSwipeableOpen={(direction) => {
-            if (direction === "left") {
-              swipeableRefs.current[index]?.close();
-              setEditGoal(item);
-              setIsEdit(true);
-              handleEdit(item);
-              onOpen();
-            } else if (direction === "right") {
-              Alert.alert(
-                "Excluir Meta",
-                `Tem certeza de que deseja excluir a meta "${item.titulo}"?`,
-                [
-                  { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
-                  { text: "Excluir", style: "destructive", onPress: () => handleDelete(item.id) },
-                ]
-              );
-            }
-          }}
+          onSwipeableOpen={(direction) => onSwipeableOpen(direction, item, index)}
         >
           <View style={[styles.card, item.concluido && { backgroundColor: themas.Colors.green }]}>
             <View style={styles.rowCard}>

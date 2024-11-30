@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { themas } from '../global/themes';
 import { AntDesign } from '@expo/vector-icons';
-import { useActivity } from '../components/Modal/atividadesmodal';
-import AtividadesList from '../components/Listas/atividadeslist';
+import { useActivity } from '../components/Context/authcontextatividades';
+import MetasList from '../components/Listas/atividadeslist';
+import AtividadesModal from '../components/Modal/atividadesmodal';
 
 export default function Atividades() {
   const { onOpen } = useActivity();
@@ -14,7 +15,8 @@ export default function Atividades() {
       <TouchableOpacity style={styles.button} onPress={onOpen}>
         <AntDesign name="plus" size={40} color={themas.Colors.primary} />
       </TouchableOpacity>
-      <AtividadesList/>
+      <MetasList/>
+      <AtividadesModal/>
     </View>
   );
 }
