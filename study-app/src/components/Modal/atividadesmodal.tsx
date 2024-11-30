@@ -18,7 +18,7 @@ interface Activity {
   dataConclusao: string;
   icon: string;
   color: string;
-  status: string;
+  status: 'em andamento' | 'em pausa' | 'concluido';
   createdAt: string;
 }
 
@@ -86,7 +86,7 @@ export const AtividadesModal: React.FC<AtividadesModalProps> = ({ isEdit = false
       dataConclusao: format(adjustedDate, 'yyyy-MM-dd', { locale: ptBR }),
       icon,
       color,
-      status: 'incompleto',
+      status: 'em andamento',
       createdAt: new Date().toISOString(),
     };
 

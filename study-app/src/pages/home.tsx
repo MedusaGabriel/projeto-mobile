@@ -5,6 +5,8 @@ import { themas } from '../global/themes';
 import { auth, firestore } from '../services/firebaseConfig';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import MetasGraficos from '../components/Graficos/metasgraficos';
+import AtividadesGraficos from '../components/Graficos/atividadesgraficos';
+
 
 interface Meta {
   id: string;
@@ -92,6 +94,7 @@ function Home() {
       <Text style={styles.textsecondary}>Acompanhe seu progresso!!</Text>
       <MetasGraficos />
       <View style={styles.metasbox}>
+        <AtividadesGraficos />
       </View>
     </View>
   );

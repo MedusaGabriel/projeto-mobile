@@ -57,11 +57,13 @@ export default function Cadastro() {
     // Verifica se houve erro
     useEffect(() => {
         if (error) {
-            if (error.code === 'auth/email-already-in-use') {
-                Alert.alert('Erro', 'Este e-mail já está em uso. Tente outro.');
-            } else {
-                Alert.alert('Erro', 'Houve um problema ao criar sua conta. Tente novamente.');
-            }
+          if (error.code === 'auth/email-already-in-use') {
+            Alert.alert('Erro', 'Este e-mail já está em uso. Tente outro.');
+          } else if (error.code === 'auth/weak-password') {
+            Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
+          } else {
+            Alert.alert('Erro', 'Houve um problema ao criar sua conta. Tente novamente.');
+          }
         }
     }, [error]);
 

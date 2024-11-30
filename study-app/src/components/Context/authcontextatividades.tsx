@@ -7,10 +7,11 @@ interface Activity {
   id: string;
   titulo: string;
   descricao: string;
+  materia: string; // Adicione a propriedade materia
   dataConclusao: string;
   icon: string;
   color: string;
-  status: string;
+  status: 'em andamento' | 'em pausa' | 'concluido';
   createdAt: string;
 }
 
@@ -18,10 +19,11 @@ interface ActivityContextProps {
   activitiesList: Activity[];
   fetchActivities: () => void;
   handleSave: (activity: Activity, isEdit: boolean, editActivityId: string | null) => Promise<void>;
-  handleDelete: (id: string) => Promise<void>;
+  deleteActivity: (id: string) => Promise<void>;
   handleEdit: (activity: Activity) => void;
   setOnOpen: (onOpen: () => void) => void;
   onOpen: () => void;
+  updateActivityStatus: (id: string, newStatus: 'em andamento' | 'em pausa' | 'concluido') => Promise<void>;
 }
 
 export const ActivityContext = createContext<ActivityContextProps>({} as ActivityContextProps);
@@ -47,9 +49,10 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         activitiesList.push({
-          id: doc.id,
+          id: doc.id, // Certifique-se de que o id é único
           titulo: data.titulo,
           descricao: data.descricao,
+          materia: data.materia, // Adicione a propriedade materia
           dataConclusao: data.dataConclusao,
           icon: data.icon,
           color: data.color,
@@ -80,10 +83,11 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
         await updateDoc(activityDocRef, {
           titulo: activity.titulo,
           descricao: activity.descricao,
+          materia: activity.materia, // Adicione a propriedade materia
           dataConclusao: activity.dataConclusao,
           icon: activity.icon,
           color: activity.color,
-          status: activity.status,
+          status: 'em andamento',
           createdAt: activity.createdAt,
         });
         Alert.alert("Sucesso!", "Atividade atualizada com sucesso!");
@@ -104,10 +108,10 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleEdit = (activity: Activity) => {
-    // Implementar lógica de edição se necessário
+    // Implement the edit logic here
   };
 
-  const handleDelete = async (id: string) => {
+  const updateActivityStatus = async (id: string, newStatus: 'em andamento' | 'em pausa' | 'concluido') => {
     try {
       setLoading(true);
       const user = auth.currentUser;
@@ -116,25 +120,41 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       const activityDocRef = doc(db, "users", user.uid, "atividades", id);
-      await deleteDoc(activityDocRef);
-      setActivitiesList((prevActivities) => prevActivities.filter((activity) => activity.id !== id));
-      Alert.alert("Sucesso!", "Atividade excluída com sucesso!");
+      await updateDoc(activityDocRef, {
+        status: newStatus,
+        dataConclusao: newStatus === 'concluido' ? new Date().toISOString() : null,
+      });
+      fetchActivities();
     } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao excluir a atividade. Tente novamente.");
-      console.error("Erro ao excluir atividade no Firebase:", error);
+      Alert.alert("Erro", "Ocorreu um erro ao atualizar o status da atividade. Tente novamente.");
+      console.error("Erro ao atualizar status da atividade no Firebase:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (!isFetched) {
-      fetchActivities();
+  const deleteActivity = async (id: string) => {
+    try {
+      setLoading(true);
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Erro", "Usuário não autenticado.");
+        return;
+      }
+
+      const activityDocRef = doc(db, "users", user.uid, "atividades", id);
+      await deleteDoc(activityDocRef);
+      fetchActivities(); // Refresh the list of activities
+    } catch (error) {
+      Alert.alert("Erro", "Ocorreu um erro ao apagar a atividade. Tente novamente.");
+      console.error("Erro ao apagar a atividade no Firebase:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [isFetched]);
+  };
 
   return (
-    <ActivityContext.Provider value={{ activitiesList, fetchActivities, handleSave, handleDelete, handleEdit, setOnOpen, onOpen }}>
+    <ActivityContext.Provider value={{ activitiesList, fetchActivities, handleSave, deleteActivity, handleEdit, setOnOpen, onOpen, updateActivityStatus }}>
       {children}
     </ActivityContext.Provider>
   );

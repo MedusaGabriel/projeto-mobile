@@ -5,6 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useActivity } from '../components/Context/authcontextatividades';
 import MetasList from '../components/Listas/atividadeslist';
 import AtividadesModal from '../components/Modal/atividadesmodal';
+import CardAtividades from '../components/Modal/cardatividades';
 
 export default function Atividades() {
   const { onOpen } = useActivity();
