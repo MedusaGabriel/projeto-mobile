@@ -1,9 +1,9 @@
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { themas } from '../global/themes';
 import { AntDesign } from '@expo/vector-icons';
-import { useGoal } from '../components/Modal/metasmodal';
+import { useGoal } from '../components/Context/authcontextmetas';
 import MetasList from '../components/Listas/metaslist';
+import MetasModal from '../components/Modal/metasmodal';
 
 export default function Metas() {
   const { onOpen } = useGoal();
@@ -14,7 +14,8 @@ export default function Metas() {
       <TouchableOpacity style={styles.button} onPress={onOpen}>
         <AntDesign name="plus" size={40} color={themas.Colors.primary} />
       </TouchableOpacity>
-      <MetasList/>
+      <MetasList />
+      <MetasModal children={undefined} />
     </View>
   );
 }
@@ -37,12 +38,12 @@ const styles = StyleSheet.create({
     bottom: 15,
     width: 60, 
     height: 60,
-    backgroundColor: themas.Colors.blueLigth, // Cor de fundo azul
-    borderRadius: 30, // Botão redondo
-    justifyContent: 'center', // Centralizar o conteúdo dentro do botão
-    alignItems: 'center', // Centralizar o conteúdo dentro do botão
-    elevation: 5,  // Sombra para um efeito 3D
-    zIndex: 10, // Garantir que o botão fique acima de outros elementos
+    backgroundColor: themas.Colors.blueLigth, 
+    borderRadius: 30, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    elevation: 5,  
+    zIndex: 10, 
   },
   buttonText: {
     fontSize: 16,

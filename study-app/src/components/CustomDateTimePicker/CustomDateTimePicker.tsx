@@ -57,16 +57,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Background escurecido para destaque do modal
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
   pickerContainer: {
     justifyContent: "center",
     alignItems: "center",
     width: '80%', // Ajusta a largura do DateTimePicker
-    backgroundColor: themas.Colors.bgScreen, // Cor de fundo mais clara
+    backgroundColor: themas.Colors.secondary, // Cor de fundo mais clara
     borderRadius: 10, // Bordas arredondadas
-    padding: 20, // Espaçamento interno
-    shadowColor: '#000', 
+    padding: 20, // Espaçamento internos
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25, 
     shadowRadius: 3.5,

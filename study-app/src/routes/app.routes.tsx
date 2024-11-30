@@ -1,4 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AtividadesModal } from '../components/Modal/atividadesmodal';
+import { GoalProvider } from '../components/Context/authcontextmetas';
 import React from 'react';
 import { Image } from 'react-native';
 import Home from '../pages/home';
@@ -6,9 +9,6 @@ import Metas from '../pages/metas';
 import Atividades from '../pages/atividades';
 import Mais from '../pages/mais';
 import { themas } from '../global/themes';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MetasModal from '../components/Modal/metasmodal';
-import { AtividadesModal } from '../components/Modal/atividadesmodal';
 
 const Tab = createBottomTabNavigator();
 
@@ -59,9 +59,9 @@ export default function AppRouter() {
         options={{ headerShown: false }}
       >
         {() => (
-          <MetasModal>
+          <GoalProvider>
             <Metas />
-          </MetasModal>
+          </GoalProvider>
         )}
       </Tab.Screen>
       <Tab.Screen 

@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Swipeable } from "react-native-gesture-handler";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { themas } from "../../global/themes";
-import { useGoal } from "../Modal/metasmodal";
-import { db } from "../../services/firebaseConfig";
+import { useGoal } from "../Context/authcontextmetas";
 import { format } from 'date-fns';
 import { LinearGradient } from "expo-linear-gradient";
+import { ptBR } from 'date-fns/locale';
 
 interface Meta {
   id: string;
@@ -21,187 +19,37 @@ interface Meta {
 }
 
 const MetasList: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [contentHeight, setContentHeight] = useState(0); // Armazena a altura total do conteúdo
-
-  const swipeableRefs = useRef<(Swipeable | null)[]>([]); // Ref para os Swipeables
-  const { goalsList, setGoalsList, setTitulo, setDescricao, setDataConclusao, setIsEdit, onOpen, setEditGoalId } = useGoal();
-
-  useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      setUserId(user.uid);
-    } else {
-      console.log("Usuário não autenticado");
-    }
-  }, []);
+  const { goalsList, handleDelete, toggleConcluido, handleEdit, onOpen } = useGoal();
+  const swipeableRefs = useRef<(Swipeable | null)[]>([]);
+  const [editGoal, setEditGoal] = useState<Meta | null>(null);
+  const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userId) {
-      const fetchMetas = async () => {
-        try {
-          const metasRef = collection(db, "users", userId, "metas");
-          const querySnapshot = await getDocs(metasRef);
-          const metasList: Meta[] = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            metasList.push({
-              id: doc.id,
-              titulo: data.titulo,
-              descricao: data.descricao,
-              dataConclusao: data.dataConclusao,
-              concluido: data.concluido || false,
-              createdAt: data.createdAt || new Date().toISOString(), // Adiciona a data de criação
-            });
-          });
-          metasList.sort((a, b) => {
-            if (a.concluido && !b.concluido) return 1;
-            if (!a.concluido && b.concluido) return -1;
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          });
-          setGoalsList(metasList); // Atualiza o estado com as metas obtidas do Firestore
-        } catch (error) {
-          console.error("Erro ao buscar metas:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchMetas();
-    }
-  }, [userId, setGoalsList]);
-  
-  const toggleConcluido = async (id: string) => {
-    if (!userId) return;
-  
-    // Referência à meta no Firestore
-    const metaRef = doc(db, "users", userId, "metas", id);
-    const meta = goalsList.find((meta) => meta.id === id);
-  
-    if (!meta) {
-      console.error("Meta não encontrada!");
-      return;
-    }
-  
-    const newConcluidoStatus = !meta.concluido; // Inverte o estado de conclusão
-    const dataConclusaoReal = newConcluidoStatus ? new Date().toISOString() : null; // Define a data de conclusão real, se necessário
-  
-    try {
-      // Atualiza o Firestore
-      await updateDoc(metaRef, {
-        concluido: newConcluidoStatus,
-        dataConclusaoReal: dataConclusaoReal,
-      });
-  
-      // Atualiza o estado local
-      setGoalsList((prevMetas) => {
-        const updatedMetas = prevMetas.map((meta) =>
-          meta.id === id
-            ? { ...meta, concluido: newConcluidoStatus, dataConclusaoReal }
-            : meta
-        );
-  
-        // Reordena metas: concluídas no final e mais recentes no topo
-        const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
-        const concludedGoals = updatedMetas.filter(meta => meta.concluido);
-  
-        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-        return [...nonConcludedGoals, ...concludedGoals];
-      });
-    } catch (error) {
-      console.error("Erro ao atualizar meta:", error);
-    }
-  };
-  
-  const handleDelete = async (meta: Meta) => {
-    try {
-      const metaDocRef = doc(db, "users", userId as string, "metas", meta.id);
-      await deleteDoc(metaDocRef);
-  
-      // Atualiza a lista de metas, mantendo as metas concluídas no final
-      setGoalsList((prevMetas) => {
-        // Filtra a meta excluída
-        const updatedMetas = prevMetas.filter((item) => item.id !== meta.id);
-  
-        // Separa as metas concluídas das não concluídas
-        const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
-        const concludedGoals = updatedMetas.filter(meta => meta.concluido);
-  
-        // Ordena as metas não concluídas por data de criação
-        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-        // Combina as metas não concluídas com as concluídas (as concluídas sempre no final)
-        return [...nonConcludedGoals, ...concludedGoals];
-      });
-    } catch (error) {
-      console.error("Erro ao excluir meta:", error);
-    }
-  };
-
-  const handleEdit = (meta: Meta, index: number) => {
-    // Fecha o Swipeable do item atual
-    swipeableRefs.current[index]?.close();
-  
-    // Configura os valores no modal
-    setTitulo(meta.titulo);
-    setDescricao(meta.descricao);
-  
-    const [day, month, year] = meta.dataConclusao.split('/');
-    const dataConclusao = new Date(`${year}-${month}-${day}`);
-  
-    if (!isNaN(dataConclusao.getTime())) {
-      dataConclusao.setDate(dataConclusao.getDate() + 1);
-      setDataConclusao(dataConclusao);
-    } else {
-      console.error("Data de conclusão inválida:", meta.dataConclusao);
-      setDataConclusao(new Date());
-    }
-  
-    setIsEdit(true);
-    setEditGoalId(meta.id);
-    onOpen();
-  
-    // Reordena a lista após a edição
-    setGoalsList((prevMetas) => {
-      const updatedMetas = prevMetas.map((item) =>
-        item.id === meta.id
-          ? {
-              ...item,
-              titulo: meta.titulo,
-              descricao: meta.descricao,
-              dataConclusao: meta.dataConclusao,
-            }
-          : item
-      );
-  
-      // Ordena a lista garantindo que concluídas fiquem no final
-      const nonConcludedGoals = updatedMetas.filter(meta => !meta.concluido);
-      const concludedGoals = updatedMetas.filter(meta => meta.concluido);
-  
-      nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-      return [...nonConcludedGoals, ...concludedGoals];
-    });
-  };
+    setLoading(false);
+  }, [goalsList]);
 
   const renderRightActions = () => (
-    <View style={[styles.Button, { backgroundColor: 'red', marginRight: 20, marginLeft: -20,}]} >
+    <View style={[styles.Button, { backgroundColor: 'red', marginRight: 20, marginLeft: -20 }]}>
       <AntDesign name="delete" size={20} color={'#FFF'} />
       <Text style={styles.ButtonText}>Delete</Text>
     </View>
   );
 
-  const renderLeftActions = (meta: Meta, index: number) => (
-    <View style={[styles.Button, { backgroundColor: themas.Colors.blueLigth, marginLeft: 20, marginRight: -20, }]} >
+  
+  const renderLeftActions = () => (
+    <View style={[styles.Button, { backgroundColor: themas.Colors.blueLigth, marginLeft: 20, marginRight: -20 }]}>
       <AntDesign name="edit" size={20} color={'#FFF'} />
-      <TouchableOpacity onPress={() => handleEdit(meta, index)} >
-        <Text style={styles.ButtonText}>Editar</Text>
-      </TouchableOpacity>
+      <Text style={styles.ButtonText}>Editar</Text>
     </View>
   );
-
+  
+  const adjustDate = (dateString: string) => {
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+    return date;
+  };
+  
   const renderMeta = ({ item, index }: { item: Meta; index: number }) => {
     let formattedDate = item.dataConclusao;
     if (item.concluido && item.dataConclusaoReal) {
@@ -209,9 +57,9 @@ const MetasList: React.FC = () => {
     }
   
     try {
-      const date = new Date(formattedDate);
+      const date = adjustDate(formattedDate);
       if (!isNaN(date.getTime())) {
-        formattedDate = format(date, 'dd/MM/yyyy'); // Formato de data desejado
+        formattedDate = format(date, 'dd/MM/yyyy', { locale: ptBR });
       }
     } catch (error) {
       console.error("Erro ao formatar data:", error);
@@ -225,25 +73,29 @@ const MetasList: React.FC = () => {
           ref={(ref) => (swipeableRefs.current[index] = ref)}
           key={item.id}
           renderRightActions={renderRightActions}
-          renderLeftActions={() => renderLeftActions(item, index)}
+          renderLeftActions={renderLeftActions}
           onSwipeableOpen={(direction) => {
             if (direction === "left") {
-              handleEdit(item, index);
+              swipeableRefs.current[index]?.close();
+              setEditGoal(item);
+              setIsEdit(true);
+              handleEdit(item);
+              onOpen();
             } else if (direction === "right") {
               Alert.alert(
                 "Excluir Meta",
                 `Tem certeza de que deseja excluir a meta "${item.titulo}"?`,
                 [
                   { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
-                  { text: "Excluir", style: "destructive", onPress: () => handleDelete(item) },
+                  { text: "Excluir", style: "destructive", onPress: () => handleDelete(item.id) },
                 ]
               );
             }
           }}
         >
-          <View style={[styles.card, item.concluido && { backgroundColor: themas.Colors.green }]} >
-            <View style={styles.rowCard} >
-              <View style={styles.rowCardLeft} >
+          <View style={[styles.card, item.concluido && { backgroundColor: themas.Colors.green }]}>
+            <View style={styles.rowCard}>
+              <View style={styles.rowCardLeft}>
                 <TouchableOpacity
                   style={[styles.circle, item.concluido && { backgroundColor: themas.Colors.greenlight }]}
                   onPress={() => toggleConcluido(item.id)}
@@ -264,7 +116,7 @@ const MetasList: React.FC = () => {
   };
 
   const handleContentSizeChange = (contentWidth: number, contentHeight: number) => {
-    setContentHeight(contentHeight); // Atualiza a altura total do conteúdo
+    // Atualiza a altura total do conteúdo
   };
 
   const isGradientVisible = goalsList.length > 6; // LinearGradient será exibido a partir da 8ª meta
@@ -286,14 +138,14 @@ const MetasList: React.FC = () => {
             showsVerticalScrollIndicator={false}
             ListFooterComponent={<View style={{ height: 100 }} />}
             onContentSizeChange={handleContentSizeChange} // Atualiza a altura do conteúdo
-            />
-          {isGradientVisible && ( // Exibe o LinearGradient a partir da 8ª meta
+          />
+          {isGradientVisible && ( 
             <LinearGradient
-            colors={["transparent", themas.Colors.bgSecondary]}
-            style={styles.gradient}
+              colors={["transparent", themas.Colors.bgSecondary]}
+              style={styles.gradient}
             />
           )}
-       </>
+        </>
       ) : (
         <Text style={styles.subtitulo}>Sem metas registradas, comece agora!</Text>
       )}

@@ -106,7 +106,7 @@ const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     height: 55,
     width: '100%',
-    borderRadius: 15,
+    borderRadius: 10,
     paddingLeft: 12,
     fontSize: 16,
     fontFamily: themas.Fonts.regular,
@@ -117,15 +117,16 @@ const pickerSelectStyles = StyleSheet.create({
     pointerEvents: 'none',
   },
   inputAndroid: {
-    height: 55, // Altura padrão
-    width: '100%', // Largura padrão
-    borderRadius: 15,
-    paddingHorizontal: 12, // Padding horizontal uniforme
+    height: 55,
+    width: '100%',
+    borderRadius: 10,
+    paddingHorizontal: 12, 
     fontSize: 16,
     fontFamily: themas.Fonts.regular,
     color: themas.Colors.secondary,
-    alignSelf: 'center', // Centralizado horizontalmente
+    alignSelf: 'center',
     backgroundColor: themas.Colors.bgScreen,
+    pointerEvents: 'none',
 },
   iconContainer: {
     position: 'absolute', 

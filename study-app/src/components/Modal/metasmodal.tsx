@@ -1,30 +1,13 @@
-import React, { createContext, useContext, useRef, useState, ReactNode } from "react";
+import React, { useRef, useState, ReactNode, useEffect } from "react";
 import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
-import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns'; 
 import { ptBR } from 'date-fns/locale';
-import { serverTimestamp, addDoc, collection, doc, getDocs, updateDoc } from 'firebase/firestore';
-import { auth, db } from "../../services/firebaseConfig";
-
-const FieldValue = { serverTimestamp };
-
-interface GoalContextProps {
-  onOpen: () => void;
-  goalsList: any[];
-  setGoalsList: React.Dispatch<React.SetStateAction<Goal[]>>,
-  setTitulo: React.Dispatch<React.SetStateAction<string>>,
-  setDescricao: React.Dispatch<React.SetStateAction<string>>,
-  setDataConclusao: React.Dispatch<React.SetStateAction<Date>>,
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>,
-  setEditGoalId: React.Dispatch<React.SetStateAction<string | null>>,
-  handleEdit: (goal: Goal) => void,
-}
-
-export const GoalContext = createContext<GoalContextProps>({} as GoalContextProps);
+import { useGoal } from "../Context/authcontextmetas";
 
 interface Goal {
   createdAt: string | number | Date;
@@ -35,148 +18,66 @@ interface Goal {
   concluido: boolean; 
 }
 
-export const MetasModal = ({ children }: { children: ReactNode }) => {
+interface MetasModalProps {
+  children: ReactNode;
+  isEdit?: boolean;
+  editGoal?: Goal | null;
+}
+
+export const MetasModal: React.FC<MetasModalProps> = ({ children, isEdit = false, editGoal = null }) => {
   const modalizeRef = useRef<Modalize>(null);
-  const [titulo, setTitulo] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [dataConclusao, setDataConclusao] = useState(new Date());
-  const [isEdit, setIsEdit] = useState(false);
-  const [editGoalId, setEditGoalId] = useState<string | null>(null);
+  const [titulo, setTitulo] = useState(editGoal?.titulo || '');
+  const [descricao, setDescricao] = useState(editGoal?.descricao || '');
+  const [dataConclusao, setDataConclusao] = useState(editGoal ? new Date(editGoal.dataConclusao) : new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [goalsList, setGoalsList] = useState<Goal[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { handleSave, setOnOpen } = useGoal();
   const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });
 
   const onOpen = () => modalizeRef.current?.open();
   const onClose = () => {
     modalizeRef.current?.close();
     resetForm();
-    fetchMetas();
   };
 
-  const fetchMetas = async () => {
-    try {
-      const user = auth.currentUser;
-      if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado.");
-        return;
-      }
-      const metasRef = collection(db, "users", user.uid, "metas");
-      const querySnapshot = await getDocs(metasRef);
-      let metasList: Goal[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        metasList.push({
-          id: doc.id,
-          titulo: data.titulo,
-          descricao: data.descricao,
-          dataConclusao: data.dataConclusao,
-          concluido: data.concluido || false,
-          createdAt: data.createdAt || new Date().toISOString(), // Adiciona a data de criação
-        });
-      });
-      metasList = metasList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-      setGoalsList(metasList);
-    } catch (error) {
-      console.error("Erro ao buscar metas:", error);
+  useEffect(() => {
+    setOnOpen(() => onOpen);
+  }, [setOnOpen]);
+
+  useEffect(() => {
+    if (isEdit && editGoal) {
+      setTitulo(editGoal.titulo);
+      setDescricao(editGoal.descricao);
+      setDataConclusao(new Date(editGoal.dataConclusao));
     }
-  };
+  }, [isEdit, editGoal]);
 
-  const handleSave = async () => {
-  if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
-    Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
-    return;
-  }
-
-  const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
-
-  if (adjustedDate !== dataConclusao) {
-    setDataConclusao(adjustedDate);
-  }
-
-  const newGoal = {
-    titulo,
-    descricao,
-    dataConclusao: format(adjustedDate, 'dd/MM/yyyy', { locale: ptBR }),
-    concluido: false,
-    createdAt: new Date().toISOString(),
-  };
-
-  try {
-    setLoading(true);
-    const user = auth.currentUser;
-
-    if (!user) {
-      Alert.alert("Erro", "Usuário não autenticado.");
+  const handleSaveGoal = async () => {
+    if (!titulo.trim() || !descricao.trim() || !dataConclusao) {
+      Alert.alert("Atenção", "Por favor, preencha todos os campos antes de salvar.");
       return;
     }
 
-    const metasRef = collection(db, "users", user.uid, "metas");
+    const adjustedDate = new Date(dataConclusao.setHours(12, 0, 0, 0));
 
-    if (isEdit && editGoalId) {
-      const goalDocRef = doc(db, "users", user.uid, "metas", editGoalId);
-      await updateDoc(goalDocRef, newGoal);
-      Alert.alert("Sucesso!", "Meta atualizada com sucesso!");
-    } else {
-      const goalDocRef = await addDoc(metasRef, newGoal);
-      const newGoalWithId = { id: goalDocRef.id, ...newGoal };
-      setGoalsList((prevGoals) => {
-        const updatedGoals = [newGoalWithId, ...prevGoals];
+    const newGoal = {
+      id: editGoal?.id || '',
+      titulo,
+      descricao,
+      dataConclusao: format(adjustedDate, 'yyyy-MM-dd', { locale: ptBR }),
+      concluido: false,
+      createdAt: new Date().toISOString(),
+    };
 
-        // Separando as metas concluídas das não concluídas
-        const nonConcludedGoals = updatedGoals.filter(goal => !goal.concluido);
-        const concludedGoals = updatedGoals.filter(goal => goal.concluido);
-
-        // Ordenando as metas não concluídas por data de criação
-        nonConcludedGoals.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        // Concatenando as metas não concluídas com as concluídas no final
-        return [...nonConcludedGoals, ...concludedGoals];
-      });
-      Alert.alert("Sucesso!", "Meta salva com sucesso!");
-    }
-
+    await handleSave(newGoal, isEdit, editGoal?.id || '');
     onClose();
     resetForm();
-  } catch (error) {
-    Alert.alert("Erro", "Ocorreu um erro ao salvar a meta. Tente novamente.");
-    console.error("Erro ao salvar meta no Firebase:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-  
-  const handleEdit = (goal: Goal) => {
-    setTitulo(goal.titulo);
-    setDescricao(goal.descricao);
-  
-    // Se a data for string no formato 'dd/MM/yyyy', convertemos para um objeto Date
-    let date: Date;
-  
-    if (goal.dataConclusao.includes('/')) {
-      const [day, month, year] = goal.dataConclusao.split('/');
-      date = new Date(`${year}-${month}-${day}T12:00:00`); // ISO format com hora ajustada para meio-dia
-    } else {
-      date = new Date(goal.dataConclusao);
-      date.setHours(12, 0, 0, 0); // Ajuste para meio-dia (12:00) para evitar problemas de fuso horário
-    }
-
-    // Atualiza o estado com a nova data
-    setDataConclusao(date);
-  
-    setIsEdit(true);
-    setEditGoalId(goal.id);
-    onOpen();
   };
 
   const resetForm = () => {
     setTitulo('');
     setDescricao('');
     setDataConclusao(new Date());
-    setIsEdit(false);
-    setEditGoalId(null);
   };
 
   const _container = () => (
@@ -191,7 +92,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
             <MaterialIcons name="close" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
           <Text style={styles.title}>{isEdit ? "Edite sua Meta" : "Crie uma nova Meta"}</Text>
-          <TouchableOpacity onPress={handleSave}>
+          <TouchableOpacity onPress={handleSaveGoal}>
             <AntDesign name="check" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
         </View>
@@ -246,13 +147,12 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
                 <CustomDateTimePicker
                   type="date"
                   onDateChange={(date) => {
-                    // Ajustar a data para meio-dia (12:00) para evitar problemas de fuso horário
                     date.setHours(12, 0, 0, 0);
                     setDataConclusao(date);
                   }}
                   show={showDatePicker}
                   setShow={setShowDatePicker}
-                  selectedDate={dataConclusao}  // Passando dataConclusao corretamente
+                  selectedDate={dataConclusao}
                 />
               </View>
             )}
@@ -263,22 +163,7 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
   );
 
   return (
-    <GoalContext.Provider value={{ onOpen, goalsList, setGoalsList, setTitulo, setDescricao, setDataConclusao, setIsEdit, setEditGoalId, handleEdit }}>
-      {loading && (
-        <Modal
-          transparent
-          animationType="fade"
-          visible={loading}
-          statusBarTranslucent
-        >
-          <View style={styles.loadingContainer}>
-            <View style={styles.loadingBox}>
-              <ActivityIndicator size="large" color={themas.Colors.primary} />
-              <Text style={styles.loadingText}>Carregando...</Text>
-            </View>
-          </View>
-        </Modal>
-      )}
+    <>
       {children}
       <Modalize
         ref={modalizeRef}
@@ -290,14 +175,14 @@ export const MetasModal = ({ children }: { children: ReactNode }) => {
           zIndex: 1
         }}
         onOverlayPress={resetForm}
-        >
+      >
         {_container()}
       </Modalize>
-    </GoalContext.Provider>
+    </>
   );
 };
 
-export const useGoal = () => useContext(GoalContext);
+export default MetasModal;
 
 const styles = StyleSheet.create({
   container: {
@@ -328,7 +213,6 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: themas.Fonts.medium,
     color: themas.Colors.secondary,
-
   },
   inputContainer: {
     width: '100%',
@@ -370,33 +254,4 @@ const styles = StyleSheet.create({
     fontFamily: themas.Fonts.medium,
     alignSelf: 'flex-end',
   },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  loadingBox: {
-    width: 150,
-    height: 150,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-  },
-  loadingText: {
-    color: 'white',
-    fontSize: 18,
-    fontFamily: themas.Fonts.medium,
-    textAlign: 'center',
-    marginTop: 10,
-  },
 });
-
-export default MetasModal;

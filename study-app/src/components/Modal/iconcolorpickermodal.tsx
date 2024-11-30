@@ -26,7 +26,7 @@ const IconColorPickerModal: React.FC<IconColorPickerModalProps> = ({ visible, on
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType="slide" statusBarTranslucent={true} presentationStyle="overFullScreen">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>{type === 'icon' ? 'Selecione um Ícone' : 'Selecione uma Cor'}</Text>
@@ -68,6 +68,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100%',
+    height: '100%',
   },
   modalContent: {
     width: '80%',
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: themas.Fonts.bold,
     color: themas.Colors.primary,
     marginBottom: 10,
   },

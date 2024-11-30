@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { auth, firestore } from '../services/firebaseConfig';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { themas } from '../global/themes';
 import { doc, getDoc } from 'firebase/firestore';
 import { Button } from "../components/Button"; // Importando o componente Button
@@ -49,7 +48,7 @@ const Mais = () => {
 
   return (
     <View style={[{ paddingTop: 60 }, styles.container]}>
-      <Text style={styles.headerText}>Dados Pessoais</Text>
+      <Text style={styles.title}>Dados Pessoais</Text>
       <View style={styles.card}>
         {loading ? (
           <View style={styles.loadingContainer}>
@@ -103,12 +102,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 20,
   },
-  headerText: {
-    textAlign: 'left',
-    width: '100%',
-    fontSize: 18,
-    fontFamily: themas.Fonts.medium,
-    color: themas.Colors.primary,
+  title: {
+    fontSize: 20, 
+    color: themas.Colors.primary, 
+    fontFamily: themas.Fonts.bold,
     marginBottom: 10,
   },
   text: {
@@ -118,11 +115,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   loadingContainer: {
-    backgroundColor: themas.Colors.bgSecondary,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
     elevation: 5,
     height: "auto",
     width: '100%',

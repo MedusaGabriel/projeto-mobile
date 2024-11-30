@@ -98,7 +98,7 @@ const AtividadesList: React.FC = () => {
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <Text style={styles.noActivitiesText}>Sem atividades registradas, comece agora!</Text>
+        <Text style={styles.subtitulo}>Sem atividades registradas, comece agora!</Text>
       )}
     </View>
   );
@@ -148,11 +148,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: themas.Colors.secondary,
   },
-  noActivitiesText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
+  subtitulo: {
+    fontFamily: themas.Fonts.regular,
     color: themas.Colors.gray,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
