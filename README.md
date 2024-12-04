@@ -1,4 +1,4 @@
-# *Projeto Faculdade - Projeto-Mobile
+# Projeto Faculdade - Projeto-Mobile
  Study App
  Study App
 
