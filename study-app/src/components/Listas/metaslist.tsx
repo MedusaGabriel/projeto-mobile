@@ -29,7 +29,7 @@ const MetasList: React.FC = () => {
 
   const renderRightActions = (item: Meta, index: number) => (
     <View style={[styles.Button, { backgroundColor: 'red', marginRight: 20, marginLeft: -20 }]}>
-      <TouchableOpacity onPress={() => handleDeleteGoal(item, index)}>
+      <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={() => handleDeleteGoal(item, index)}>
         <AntDesign name="delete" size={20} color={'#FFF'} />
         <Text style={styles.ButtonText}>Delete</Text>
       </TouchableOpacity>
