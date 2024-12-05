@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { Alert } from 'react-native';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { auth, db } from "../../services/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface Activity {
   id: string;

@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useActivity } from "../Context/authcontextatividades";
 import IconColorPickerModal from '../Modal/iconcolorpickermodal';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Activity {
   id: string;
@@ -180,15 +181,16 @@ export const AtividadesModal: React.FC<AtividadesModalProps> = ({ isEdit = false
 
             {showDatePicker && (
               <View style={styles.datePickerWrapper}>
-                <CustomDateTimePicker
-                  type="date"
-                  onDateChange={(date) => {
+                <DateTimePickerModal
+                  mode="date"
+                  onConfirm={(date) => {
                     date.setHours(12, 0, 0, 0);
                     setDataConclusao(date);
+                    setShowDatePicker(false);
                   }}
-                  show={showDatePicker}
-                  setShow={setShowDatePicker}
-                  selectedDate={dataConclusao}
+                  onCancel={() => setShowDatePicker(false)}
+                  isVisible={showDatePicker}
+                  date={dataConclusao}
                 />
               </View>
             )}

@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useActivity } from '../Context/authcontextatividades';
 import { themas } from '../../global/themes';
 import { Flag } from '../Flags/flagsatividades';
-import CardAtividades from '../Modal/cardatividades'; // Certifique-se de que o caminho está correto
+import CardAtividades from '../Modal/cardatividades';
 
 interface Activity {
   id: string;
@@ -120,6 +120,10 @@ const AtividadesList = () => {
       {loading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Carregando...</Text>
+        </View>
+      ) : activitiesList.length === 0 ? (
+        <View>
+          <Text style={styles.subtitulo}>Sem Atividades registradas, comece agora!</Text>
         </View>
       ) : (
         <FlatList
