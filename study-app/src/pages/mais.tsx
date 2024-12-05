@@ -67,7 +67,14 @@ const Mais = () => {
             <Text style={styles.text}>Usuário não encontrado</Text>
           </View>
         )}
-      </View>  
+      </View> 
+      <Text style={styles.title}>Desenvolvido por StudyApp</Text>
+      <View style={styles.card}>
+        <Text style={styles.text}>Anderson Djalma</Text>
+        <Text style={styles.text}>Brian Samuel</Text>
+        <Text style={styles.text}>Gabriel Barros</Text>
+        <Text style={styles.text}>Ryan Nunnes</Text>
+      </View>
       <View style={styles.lougoutbox}>
       <Button
           text="Sair"
@@ -92,7 +99,6 @@ const styles = StyleSheet.create({
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
     height: "auto",
-    marginTop: 20,
     marginBottom: 20,
     justifyContent: 'center',
     alignContent: 'center',
