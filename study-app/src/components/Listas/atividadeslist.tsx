@@ -13,6 +13,7 @@ interface Activity {
   materia: string;
   descricao: string;
   dataConclusao: string;
+  dataConclusaoReal?: string; // Adicione esta linha
   createdAt: any;
   icon: string;
   color: string;
@@ -66,25 +67,26 @@ const AtividadesList = () => {
   const renderActivity = ({ item }: { item: Activity }) => {
     let formattedDate = 'Data inválida';
     let dateLabel = 'Previsão para conclusão:';
-
-    let dateToFormat = item.dataConclusao || item.createdAt;
-
-    if (item.status === 'concluido' && item.dataConclusao) {
-      dateToFormat = item.dataConclusao;
+    let dateToFormat = item.dataConclusao;
+  
+    if (item.status === 'concluido') {
+      dateToFormat = item.dataConclusaoReal || item.dataConclusao;
       dateLabel = 'Atividade concluída em:';
     }
-
-    try {
-      const parsedDate = adjustDate(dateToFormat);
-      if (!isNaN(parsedDate.getTime())) {
-        formattedDate = format(parsedDate, 'dd/MM/yyyy');
+  
+    if (dateToFormat) {
+      try {
+        const parsedDate = adjustDate(dateToFormat);
+        if (!isNaN(parsedDate.getTime())) {
+          formattedDate = format(parsedDate, 'dd/MM/yyyy');
+        }
+      } catch (error) {
+        console.error("Erro ao formatar data:", error);
       }
-    } catch (error) {
-      console.error("Erro ao formatar data:", error);
     }
-
+  
     const flag = flags.find(f => f.caption === item.status);
-
+  
     return (
       <TouchableOpacity onPress={() => handleOpenModal(item)}>
         <KeyboardAvoidingView

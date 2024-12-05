@@ -7,8 +7,9 @@ interface Activity {
   id: string;
   titulo: string;
   descricao: string;
-  materia: string; // Adicione a propriedade materia
+  materia: string; 
   dataConclusao: string;
+  dataConclusaoReal?: string;
   icon: string;
   color: string;
   status: 'em andamento' | 'em pausa' | 'concluido';
@@ -54,6 +55,7 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
           descricao: data.descricao,
           materia: data.materia, // Adicione a propriedade materia
           dataConclusao: data.dataConclusao,
+          dataConclusaoReal: data.dataConclusaoReal,
           icon: data.icon,
           color: data.color,
           status: data.status,
@@ -120,10 +122,15 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       const activityDocRef = doc(db, "users", user.uid, "atividades", id);
-      await updateDoc(activityDocRef, {
+      const updateData: Partial<Activity> = {
         status: newStatus,
-        dataConclusao: newStatus === 'concluido' ? new Date().toISOString() : null,
-      });
+      };
+  
+      if (newStatus === 'concluido') {
+        updateData.dataConclusaoReal = new Date().toISOString();
+      }
+  
+      await updateDoc(activityDocRef, updateData);
       fetchActivities();
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao atualizar o status da atividade. Tente novamente.");

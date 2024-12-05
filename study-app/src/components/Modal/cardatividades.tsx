@@ -4,6 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { themas } from "../../global/themes";
 import { Flag } from "../Flags/flagsatividades";
 import { useActivity } from "../Context/authcontextatividades";
+import { format } from 'date-fns';
 
 interface Activity {
   createdAt: any;
@@ -12,6 +13,7 @@ interface Activity {
   descricao: string;
   status: 'em andamento' | 'em pausa' | 'concluido';
   dataConclusao: string;
+  dataConclusaoReal?: string;
   icon: string;
   color: string;
 }
@@ -27,6 +29,12 @@ const flags = [
   { caption: 'em andamento', color: themas.Colors.blueLigth },
   { caption: 'concluido', color: themas.Colors.green }
 ];
+
+const adjustDate = (dateString: string) => {
+  const date = new Date(dateString);
+  date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+  return date;
+};
 
 const CardAtividades: React.FC<CardAtividadesProps> = ({ visible, onClose, activity }) => {
   const { updateActivityStatus, fetchActivities, deleteActivity } = useActivity();
@@ -58,16 +66,23 @@ const CardAtividades: React.FC<CardAtividadesProps> = ({ visible, onClose, activ
   const renderActivity = () => {
     let formattedDate = 'Data inválida';
     let dateLabel = 'Previsão para conclusão:';
+    let dateToFormat = activity.dataConclusao;
 
-    let dateToFormat = activity.dataConclusao || activity.createdAt;
-
-    if (activity.status === 'concluido' && activity.dataConclusao) {
-      dateToFormat = activity.dataConclusao;
+    if (activity.status === 'concluido') {
+      dateToFormat = activity.dataConclusaoReal || activity.dataConclusao;
       dateLabel = 'Atividade concluída em:';
     }
 
-    // Formate a data aqui, se necessário
-    // formattedDate = formatDate(dateToFormat);
+    if (dateToFormat) {
+      try {
+        const parsedDate = adjustDate(dateToFormat);
+        if (!isNaN(parsedDate.getTime())) {
+          formattedDate = format(parsedDate, 'dd/MM/yyyy');
+        }
+      } catch (error) {
+        console.error("Erro ao formatar data:", error);
+      }
+    }
 
     return (
       <View>
