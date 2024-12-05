@@ -19,53 +19,38 @@ interface Meta {
 }
 
 const MetasList: React.FC = () => {
-  const { goalsList, handleDelete, toggleConcluido, handleEdit, onOpen } = useGoal();
+  const { goalsList, handleDelete, toggleConcluido } = useGoal();
   const swipeableRefs = useRef<(Swipeable | null)[]>([]);
-  const [editGoal, setEditGoal] = useState<Meta | null>(null);
-  const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(false);
   }, [goalsList]);
 
-  const renderRightActions = () => (
+  const renderRightActions = (item: Meta, index: number) => (
     <View style={[styles.Button, { backgroundColor: 'red', marginRight: 20, marginLeft: -20 }]}>
-      <AntDesign name="delete" size={20} color={'#FFF'} />
-      <Text style={styles.ButtonText}>Delete</Text>
+      <TouchableOpacity onPress={() => handleDeleteGoal(item, index)}>
+        <AntDesign name="delete" size={20} color={'#FFF'} />
+        <Text style={styles.ButtonText}>Delete</Text>
+      </TouchableOpacity>
     </View>
   );
 
-  const renderLeftActions = () => (
-    <View style={[styles.Button, { backgroundColor: themas.Colors.blueLigth, marginLeft: 20, marginRight: -20 }]}>
-      <AntDesign name="edit" size={20} color={'#FFF'} />
-      <Text style={styles.ButtonText}>Editar</Text>
-    </View>
-  );
+  const handleDeleteGoal = (goal: Meta, index: number) => {
+    Alert.alert(
+      "Excluir Meta",
+      `Tem certeza de que deseja excluir a meta "${goal.titulo}"?`,
+      [
+        { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
+        { text: "Excluir", style: "destructive", onPress: () => handleDelete(goal.id) },
+      ]
+    );
+  };
 
   const adjustDate = (dateString: string) => {
     const date = new Date(dateString);
     date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     return date;
-  };
-
-  const onSwipeableOpen = (direction: string, item: Meta, index: number) => {
-    if (direction === "left") {
-      swipeableRefs.current[index]?.close();
-      setEditGoal(item);
-      setIsEdit(true);
-      handleEdit(item);
-      onOpen();
-    } else if (direction === "right") {
-      Alert.alert(
-        "Excluir Meta",
-        `Tem certeza de que deseja excluir a meta "${item.titulo}"?`,
-        [
-          { text: "Cancelar", style: "cancel", onPress: () => swipeableRefs.current[index]?.close() },
-          { text: "Excluir", style: "destructive", onPress: () => handleDelete(item.id) },
-        ]
-      );
-    }
   };
 
   const renderMeta = ({ item, index }: { item: Meta; index: number }) => {
@@ -90,9 +75,7 @@ const MetasList: React.FC = () => {
         <Swipeable
           ref={(ref) => (swipeableRefs.current[index] = ref)}
           key={item.id}
-          renderRightActions={renderRightActions}
-          renderLeftActions={renderLeftActions}
-          onSwipeableOpen={(direction) => onSwipeableOpen(direction, item, index)}
+          renderRightActions={() => renderRightActions(item, index)}
         >
           <View style={[styles.card, item.concluido && { backgroundColor: themas.Colors.green }]}>
             <View style={styles.rowCard}>
@@ -185,6 +168,9 @@ const styles = StyleSheet.create({
   },
   descriptionCard: {
     color: themas.Colors.gray,
+  },
+  dateCard: {
+    color: themas.Colors.secondary,
   },
   rowCardLeft: {
     paddingLeft: 10,

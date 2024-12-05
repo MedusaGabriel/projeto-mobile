@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { themas } from "../../global/themes";
 import { Flag } from "../Flags/flagsatividades";
 import { useActivity } from "../Context/authcontextatividades";
@@ -25,9 +25,9 @@ interface CardAtividadesProps {
 }
 
 const flags = [
-  { caption: 'em pausa', color: themas.Colors.gray },
-  { caption: 'em andamento', color: themas.Colors.blueLigth },
-  { caption: 'concluido', color: themas.Colors.green }
+  { caption: 'em pausa', color: themas.Colors.gray, icon: 'pause' },
+  { caption: 'em andamento', color: themas.Colors.blueLigth, icon: 'play' },
+  { caption: 'concluido', color: themas.Colors.green, icon: 'check' }
 ];
 
 const adjustDate = (dateString: string) => {
@@ -110,8 +110,8 @@ const CardAtividades: React.FC<CardAtividadesProps> = ({ visible, onClose, activ
           {renderActivity()}
           <View style={styles.flagsContainer}>
             {flags.map((flag) => (
-              <TouchableOpacity key={flag.caption} onPress={() => handleChangeStatus(flag.caption as any)}>
-                <Flag caption={flag.caption} color={flag.color} selected={status === flag.caption} />
+              <TouchableOpacity key={flag.caption} onPress={() => handleChangeStatus(flag.caption as any)} style={styles.flagButton}>
+                <FontAwesome name={flag.icon as any} size={24} color={flag.color} />
               </TouchableOpacity>
             ))}
           </View>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   card: {
-    width: '80%',
+    width: '90%',
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 10,
     padding: 20,
@@ -166,7 +166,14 @@ const styles = StyleSheet.create({
   flagsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     width: '100%',
+    marginTop: 20,
+  },
+  flagButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
   },
 });
 

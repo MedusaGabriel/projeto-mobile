@@ -15,15 +15,17 @@ interface Goal {
   titulo: string;
   descricao: string;
   dataConclusao: string;
+  dataConclusaoReal?: string | null;
   concluido: boolean; 
 }
 
 interface MetasModalProps {
   isEdit?: boolean;
   editGoal?: Goal | null;
+  onClose: () => void;
 }
 
-export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal = null }) => {
+export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal = null, onClose }) => {
   const modalizeRef = useRef<Modalize>(null);
   const [titulo, setTitulo] = useState(editGoal?.titulo || '');
   const [descricao, setDescricao] = useState(editGoal?.descricao || '');
@@ -33,9 +35,10 @@ export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal
   const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });
 
   const onOpen = () => modalizeRef.current?.open();
-  const onClose = () => {
+  const handleClose = () => {
     modalizeRef.current?.close();
     resetForm();
+    onClose();
   };
 
   useEffect(() => {
@@ -69,12 +72,13 @@ export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal
       titulo,
       descricao,
       dataConclusao: format(adjustedDate, 'yyyy-MM-dd', { locale: ptBR }),
-      concluido: false,
-      createdAt: new Date().toISOString(),
+      dataConclusaoReal: editGoal?.dataConclusaoReal || null,
+      concluido: editGoal?.concluido || false,
+      createdAt: editGoal?.createdAt ? new Date(editGoal.createdAt).toISOString() : new Date().toISOString(),
     };
   
     await handleSave(newGoal, isEdit, editGoal?.id || newGoal.id);
-    onClose();
+    handleClose();
     resetForm();
   };
   
@@ -92,7 +96,7 @@ export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
+          <TouchableOpacity onPress={handleClose}>
             <MaterialIcons name="close" size={30} color={themas.Colors.blueLigth} />
           </TouchableOpacity>
           <Text style={styles.title}>{isEdit ? "Edite sua Meta" : "Crie uma nova Meta"}</Text>
