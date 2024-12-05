@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     color: themas.Colors.primary,
     fontFamily: themas.Fonts.medium,
@@ -167,12 +167,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    paddingTop: 15,
+    paddingTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
-    height: 240,
+    height: "auto",
     width: '100%',
     shadowColor: '#000',
     shadowOpacity: 0.1,

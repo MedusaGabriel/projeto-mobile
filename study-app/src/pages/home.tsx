@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   metasbox: {
     height: 190,
-    marginTop: 20,
+    marginTop: 15,
   },
 });
 

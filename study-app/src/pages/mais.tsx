@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
-    height: 120,
+    height: "auto",
+    marginTop: 20,
+    marginBottom: 20,
     justifyContent: 'center',
     alignContent: 'center',
     width: '100%',
@@ -99,7 +101,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
-    marginBottom: 10,
     padding: 20,
   },
   title: {

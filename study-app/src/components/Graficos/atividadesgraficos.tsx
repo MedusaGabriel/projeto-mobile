@@ -48,9 +48,9 @@ const AtividadesGraficos: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const [chartData, setChartData] = useState([
-    { name: 'Concluídas', count: 0, color: themas.Colors.green, legendFontColor: '#7F7F7F', legendFontSize: 15 },
-    { name: 'Em Pausa', count: 0, color: themas.Colors.gray, legendFontColor: '#7F7F7F', legendFontSize: 15 },
-    { name: 'Em Andamento', count: 0, color: themas.Colors.blueLigth, legendFontColor: '#7F7F7F', legendFontSize: 15 },
+    { name: 'Concluídas', count: 0, color: themas.Colors.green, legendFontColor: '#7F7F7F', legendFontSize: 12 },
+    { name: 'Em Pausa', count: 0, color: themas.Colors.gray, legendFontColor: '#7F7F7F', legendFontSize: 12 },
+    { name: 'Em Andamento', count: 0, color: themas.Colors.blueLigth, legendFontColor: '#7F7F7F', legendFontSize: 12 },
   ]);
 
   useFocusEffect(
@@ -61,9 +61,28 @@ const AtividadesGraficos: React.FC = () => {
 
   useEffect(() => {
     setChartData([
-      { name: 'Em Pausa', count: totalEmPausa, color: themas.Colors.gray, legendFontColor: '#7F7F7F', legendFontSize: 15 },
-      { name: 'Em Andamento', count: totalEmAndamento, color: themas.Colors.blueLigth, legendFontColor: '#7F7F7F', legendFontSize: 15 },
-      { name: 'Concluídas', count: totalConcluidas, color: themas.Colors.green, legendFontColor: '#7F7F7F', legendFontSize: 15 },
+      { 
+        name: 'Em Pausa', 
+        count: totalEmPausa, 
+        color: themas.Colors.gray, 
+        legendFontColor: '#7F7F7F', 
+        legendFontSize: 14,
+      },
+      { 
+        name: 'Em Andamento', 
+        count: totalEmAndamento, 
+        color: themas.Colors.blueLigth, 
+        legendFontColor: '#7F7F7F', 
+        legendFontSize: 14,
+      },
+      { 
+        name: 'Concluídas', 
+        count: totalConcluidas, 
+        color: themas.Colors.green, 
+        legendFontColor: '#7F7F7F', 
+        legendFontSize: 14,
+
+      },
     ]);
   }, [totalConcluidas, totalEmPausa, totalEmAndamento]);
 
@@ -71,16 +90,15 @@ const AtividadesGraficos: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.viewAtividades}>
         <View style={styles.atividadeBox}>
-          <Text style={[styles.text, { fontSize: 20 }]}>{totalAtividades}</Text>
-          <Text style={styles.text}>Total de Atividades</Text>
+          <Text style={styles.text}>Total de Atividades: {totalAtividades}</Text>
         </View>
 
       </View>
       <View style={styles.card}>
         <PieChart
           data={chartData}
-          width={Dimensions.get('window').width - 80}
-          height={220}
+          width={Dimensions.get('window').width - 50}
+          height={180}
           chartConfig={{
             backgroundColor: '#1cc910',
             backgroundGradientFrom: '#eff3ff',
@@ -89,11 +107,12 @@ const AtividadesGraficos: React.FC = () => {
             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             style: {
               borderRadius: 16,
+              width: '100%',
             },
           }}
           accessor="count"
           backgroundColor="transparent"
-          paddingLeft="15"
+          paddingLeft="0"
           absolute
         />
       </View>
@@ -106,7 +125,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     color: themas.Colors.primary,
     fontFamily: themas.Fonts.medium,
@@ -119,18 +138,16 @@ const styles = StyleSheet.create({
   },
   atividadeBox: {
     flex: 1,
+    paddingVertical: 15,
     backgroundColor: themas.Colors.bgSecondary,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   card: {
-    paddingTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: themas.Colors.bgSecondary,
     borderRadius: 15,
-    height: 240,
+    height: "auto",
     width: '100%',
     shadowColor: '#000',
     shadowOpacity: 0.1,
