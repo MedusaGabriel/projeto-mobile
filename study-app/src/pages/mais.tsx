@@ -40,6 +40,7 @@ const Mais = () => {
     try {
       await signOut(auth);
       console.log('Logout realizado com sucesso');
+      setActivitiesList([]); // Limpa o estado das atividades
       navigation.reset({ routes: [{ name: 'Login' }] });
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -143,3 +144,7 @@ const styles = StyleSheet.create({
 });
 
 export default Mais;
+
+function setActivitiesList(arg0: never[]) {
+  throw new Error('Function not implemented.');
+}

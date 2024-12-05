@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
-import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal, Button } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
@@ -191,6 +191,14 @@ export const AtividadesModal: React.FC<AtividadesModalProps> = ({ isEdit = false
                   onCancel={() => setShowDatePicker(false)}
                   isVisible={showDatePicker}
                   date={dataConclusao}
+                  locale="pt-BR"
+                  pickerContainerStyleIOS={{
+                    backgroundColor: themas.Colors.bgScreen,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  textColor={themas.Colors.primary}
+                  customCancelButtonIOS={() => null}
                 />
               </View>
             )}

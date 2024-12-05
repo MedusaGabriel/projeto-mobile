@@ -41,7 +41,6 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       const user = auth.currentUser;
       if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado.");
         setLoading(false);
         return;
       }
