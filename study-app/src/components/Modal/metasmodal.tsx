@@ -29,7 +29,6 @@ export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal
   const [descricao, setDescricao] = useState(editGoal?.descricao || '');
   const [dataConclusao, setDataConclusao] = useState(editGoal ? new Date(editGoal.dataConclusao) : new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const { handleSave, setOnOpen } = useGoal();
   const formattedDate = format(dataConclusao, 'dd/MM/yyyy', { locale: ptBR });
 

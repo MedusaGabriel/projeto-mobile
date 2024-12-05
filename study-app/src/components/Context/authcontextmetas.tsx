@@ -8,7 +8,7 @@ interface Goal {
   titulo: string;
   descricao: string;
   dataConclusao: string;
-  dataConclusaoReal?: string;
+  dataConclusaoReal?: string | null;
   concluido: boolean;
   createdAt: string;
 }
@@ -157,13 +157,23 @@ export const GoalProvider = ({ children }: { children: ReactNode }) => {
       }
       const newConcluidoStatus = !meta.concluido;
       const metaDocRef = doc(db, "users", user.uid, "metas", id);
-      await updateDoc(metaDocRef, { concluido: newConcluidoStatus });
-      setGoalsList((prevGoals) =>
-        prevGoals.map((goal) =>
-          goal.id === id ? { ...goal, concluido: newConcluidoStatus } : goal
-        )
-      );
-      fetchMetas();
+      const updateData: any = { concluido: newConcluidoStatus };
+  
+      if (newConcluidoStatus) {
+        updateData.dataConclusaoReal = new Date().toISOString(); // Adiciona a data de conclusão real
+      } else {
+        updateData.dataConclusaoReal = null; // Remove a data de conclusão real se a meta for desmarcada
+      }
+  
+      await updateDoc(metaDocRef, updateData);
+      setGoalsList((prevGoals) => {
+        const updatedGoals = prevGoals.map((goal) =>
+          goal.id === id
+            ? { ...goal, concluido: newConcluidoStatus, dataConclusaoReal: newConcluidoStatus ? new Date().toISOString() : null }
+            : goal
+        );
+        return updatedGoals.sort((a, b) => Number(a.concluido) - Number(b.concluido));
+      });
     } catch (error) {
       console.error("Erro ao atualizar meta:", error);
     } finally {

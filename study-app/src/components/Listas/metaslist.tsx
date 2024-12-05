@@ -13,7 +13,7 @@ interface Meta {
   titulo: string;
   descricao: string;
   dataConclusao: string;
-  dataConclusaoReal?: string;
+  dataConclusaoReal?: string | null;
   concluido: boolean;
   createdAt: string;
 }
