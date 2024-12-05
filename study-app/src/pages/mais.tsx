@@ -73,7 +73,7 @@ const Mais = () => {
         <Text style={styles.text}>Anderson Djalma</Text>
         <Text style={styles.text}>Brian Samuel</Text>
         <Text style={styles.text}>Gabriel Barros</Text>
-        <Text style={styles.text}>Ryan Nunnes</Text>
+        <Text style={styles.text}>Ryan Nunes</Text>
       </View>
       <View style={styles.lougoutbox}>
       <Button
