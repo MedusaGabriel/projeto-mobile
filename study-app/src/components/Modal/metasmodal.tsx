@@ -3,7 +3,7 @@ import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
 import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns'; 
 import { ptBR } from 'date-fns/locale';
@@ -152,15 +152,24 @@ export const MetasModal: React.FC<MetasModalProps> = ({ isEdit = false, editGoal
   
             {showDatePicker && (
               <View style={styles.datePickerWrapper}>
-                <CustomDateTimePicker
-                  type="date"
-                  onDateChange={(date) => {
+                <DateTimePickerModal
+                  mode="date"
+                  onConfirm={(date) => {
                     date.setHours(12, 0, 0, 0);
                     setDataConclusao(date);
+                    setShowDatePicker(false);
                   }}
-                  show={showDatePicker}
-                  setShow={setShowDatePicker}
-                  selectedDate={dataConclusao}
+                  onCancel={() => setShowDatePicker(false)}
+                  isVisible={showDatePicker}
+                  date={dataConclusao}
+                  locale="pt-BR"
+                  pickerContainerStyleIOS={{
+                    backgroundColor: themas.Colors.bgScreen,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  textColor={themas.Colors.primary}
+                  customCancelButtonIOS={() => null}
                 />
               </View>
             )}

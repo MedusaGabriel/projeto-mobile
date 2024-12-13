@@ -50,10 +50,10 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         activitiesList.push({
-          id: doc.id, // Certifique-se de que o id é único
+          id: doc.id,
           titulo: data.titulo,
           descricao: data.descricao,
-          materia: data.materia, // Adicione a propriedade materia
+          materia: data.materia,
           dataConclusao: data.dataConclusao,
           dataConclusaoReal: data.dataConclusaoReal,
           icon: data.icon,

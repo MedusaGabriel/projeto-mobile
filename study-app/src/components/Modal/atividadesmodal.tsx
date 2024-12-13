@@ -3,7 +3,6 @@ import { Modalize } from 'react-native-modalize';
 import { Input } from "../Input";
 import { TouchableOpacity, Text, View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator, Modal, Button } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import CustomDateTimePicker from "../CustomDateTimePicker/CustomDateTimePicker";
 import { themas } from '../../global/themes';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
